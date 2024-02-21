@@ -5,12 +5,18 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-export default function PersonForm({ onSubmit }) {
+type Role = string;
+type Roles = Role[];
+type Unavailability = string;
+type Unavailabilities = Unavailability[];
+
+
+export default function PersonForm({ onSubmit }: any) {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
-  const [unavailability, setUnavailability] = useState('');
-  const [roles, setRoles] = useState([]);
-  const [unavailabilities, setUnavailabilities] = useState([]);
+  const [unavailability, setUnavailability] = useState<Unavailability>('');
+  const [roles, setRoles] = useState<Roles>([]);
+  const [unavailabilities, setUnavailabilities] = useState<Unavailabilities>([]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();

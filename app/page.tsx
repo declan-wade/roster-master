@@ -13,7 +13,14 @@ import {
 } from "./cookieService";
 
 export default function Page() {
-  const [payload, setPayload] = useState([]);
+
+  interface Person {
+    name: string;
+    roles: string[];
+    unavailabilities: string[];
+  }
+
+  const [payload, setPayload] = useState<Person[]>([]);
 
   const handleSubmit = (person: any) => {
     setPayload((previous) => [...previous, person]);
