@@ -11,6 +11,7 @@
   "dependencies": {
     "bootstrap": "^5.3.3",
     "js-cookie": "^3.0.5",
+    "json2csv": "^6.0.0-alpha.2",
     "luxon": "^3.4.4",
     "next": "14.1.0",
     "react": "^18",
@@ -19,6 +20,7 @@
     "@vercel/analytics": "latest"
   },
   "devDependencies": {
+    "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

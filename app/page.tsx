@@ -5,12 +5,14 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import Form from 'react-bootstrap/Form';
+import Badge from 'react-bootstrap/Badge';
+import Alert from 'react-bootstrap/Alert';
 import {
   saveObjectToCookie,
   getObjectFromCookie,
   clearCookie,
 } from "./cookieService";
-import { url } from "inspector";
 
 export default function Page() {
   interface Person {
@@ -21,6 +23,8 @@ export default function Page() {
 
   const [payload, setPayload] = useState<Person[]>([]);
   const [roster, setRoster] = useState([]);
+  const [startDate, setStartDate] = useState("")
+  const [formValid, setFormValid] = useState(true);
 
   const handleSubmit = (person: any) => {
     setPayload((previous) => [...previous, person]);
@@ -32,10 +36,23 @@ export default function Page() {
     );
   };
 
+  const getNextMonday = () => {
+    const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getDay();
+    const daysSinceMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+    const daysUntilPreviousMonday = 7 + daysSinceMonday;
+    currentDate.setDate(currentDate.getDate() - daysUntilPreviousMonday);
+    return currentDate.toISOString().split('T')[0];
+  };
+
   const handleGenerate = async () => {
+    if (startDate === "") {
+      setFormValid(false)
+    }
+    else {
     clearCookie("roster-cookie");
     try {
-      const response = await fetch("/api/process", {
+      const response = await fetch(`/api/process?startDate=${encodeURIComponent(startDate)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -46,11 +63,12 @@ export default function Page() {
       }
       setRoster(await response.json())
       console.log("POST request successful");
-      window.open("/roster", "_ blank");
+      window.open(`/roster?startDate=${encodeURIComponent(startDate)}`, "_ blank");
     } catch (error) {
       console.error("Error sending POST request:", error);
       throw error;
     }
+  }
   };
 
   React.useEffect(() => {
@@ -92,15 +110,25 @@ export default function Page() {
         </Container>
       </Navbar>
       <div className="container mt-5">
-        <h3>Add Staff Member</h3>
+        <h4>Add Staff Member</h4>
         <PersonForm onSubmit={handleSubmit} />
+        <br></br>
+        <hr></hr>
+        <h4>Generate Roster</h4>
+        <Form.Label className="form-label">Start Date (must be a Monday):</Form.Label>
+        <div className="input-group">
+          <Form.Control type="date" step="7" className="form-control" min={getNextMonday()} required value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </div>
+        {!formValid ? (
+        <Alert variant="danger" className="mt-3">Please provide a start date.</Alert>
+      ):(<></>)}
         <br></br>
         <Button variant="warning" onClick={handleGenerate}>
           Generate Roster
         </Button>
         <br></br>
         <hr></hr>
-        <h3>Staff List</h3>
+        <h4>Staff List</h4>
         <br></br>
         <Table striped bordered hover>
           <thead>
@@ -117,7 +145,7 @@ export default function Page() {
                 payload.map((item: any) => (
                   <tr key={`${item.name}`}>
                     <td>{`${item.name}`}</td>
-                    <td>{`${item.roles}`}</td>
+                    <td><Badge pill bg="primary">{`${item.roles}`}</Badge></td>
                     <td>{`${item.unavailabilities}`}</td>
                     <td>
                       <Button
@@ -151,7 +179,7 @@ export default function Page() {
       </div>
       <footer className="footer fixed-bottom py-3 bg-light">
       <div className="container text-center">
-        <span className="text-muted">RosterMaster - v0.2 - Licensed under MIT - Made in Perth, Western Australia - Code available <a href="https://github.com/declan-wade/roster-master">here</a></span>
+        <span className="text-muted">RosterMaster - v0.4 - Licensed under MIT - Made in Perth, Western Australia - Code available <a href="https://github.com/declan-wade/roster-master">here</a></span>
       </div>
     </footer>
     </div>
