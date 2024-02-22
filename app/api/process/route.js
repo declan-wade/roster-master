@@ -1,13 +1,4 @@
-//const fs = require("fs");
-//const yaml = require("js-yaml");
 const { DateTime } = require("luxon");
-const XLSX = require("xlsx");
-
-// Load YAML file
-//const yamlData = fs.readFileSync("roster.yaml", "utf8");
-
-// Parse YAML
-//const rosterData = yaml.load(yamlData);
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 
@@ -102,64 +93,6 @@ export async function POST(req, res) {
       resolve(roster);
       return roster;
     });
-  }
-
-  // Function to generate XLSX file from roster data
-  // Function to generate XLSX file from roster data
-  function generateXLSX(roster, startDate) {
-    // Create a new workbook
-    const wb = XLSX.utils.book_new();
-
-    // Loop through each day in the roster
-    for (const dayName in roster) {
-      if (roster.hasOwnProperty(dayName)) {
-        // Create a new worksheet for each day
-        const ws = XLSX.utils.aoa_to_sheet([["Shift", "Person"]]);
-
-        // Get morning shifts for the day
-        const morningShifts = [];
-        for (let i = 1; i <= 4; i++) {
-          morningShifts.push(...roster[dayName][`morning_Role${i}`]);
-        }
-
-        // Add morning shifts to the worksheet
-        morningShifts.forEach((person, index) => {
-          XLSX.utils.sheet_add_aoa(
-            ws,
-            [[`Morning Shift ${index + 1}`, person]],
-            {
-              origin: `A${index + 2}`,
-            }
-          );
-        });
-
-        // Get afternoon shifts for the day
-        const afternoonShifts = [];
-        for (let i = 1; i <= 4; i++) {
-          afternoonShifts.push(...roster[dayName][`afternoon_Role${i}`]);
-        }
-
-        // Add afternoon shifts to the worksheet
-        afternoonShifts.forEach((person, index) => {
-          XLSX.utils.sheet_add_aoa(
-            ws,
-            [[`Afternoon Shift ${index + 1}`, person]],
-            { origin: `C${index + 2}` }
-          );
-        });
-
-        // Add the worksheet to the workbook
-        XLSX.utils.book_append_sheet(wb, ws, dayName);
-      }
-    }
-
-    // Generate a file name based on the start date
-    const fileName = `roster_${startDate.toISODate()}.xlsx`;
-
-    // Write the workbook to a file
-    XLSX.writeFile(wb, fileName);
-
-    console.log(`Roster XLSX file generated: ${fileName}`);
   }
 
   // Generate roster for the week starting from today
