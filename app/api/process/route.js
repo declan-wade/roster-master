@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic"; // static by default, unless reading the
 
 export async function POST(req, res) {
   const rosterData = await req.json();
-  console.warn(rosterData)
+  console.warn(rosterData);
 
   // Function to check availability
   function isAvailable(person, date) {
@@ -49,70 +49,56 @@ export async function POST(req, res) {
           isAvailable(person, currentDate)
         );
 
-        const morningRoles = [
-          "morning_Role1",
-          "morning_Role2",
-          "morning_Role3",
-          "morning_Role4",
-        ];
-        const afternoonRoles = [
-          "afternoon_Role1",
-          "afternoon_Role2",
-          "afternoon_Role3",
-          "afternoon_Role4",
-        ];
+        const morningRoles = ["Counter", "SS", "Phones", "O&R", "BR"];
+        const afternoonRoles = ["Counter", "SS", "Phones", "O&R", "BR"];
 
         for (const morningRole of morningRoles) {
-          roster[dayName][morningRole] = [];
-        }
-
-        for (const afternoonRole of afternoonRoles) {
-          roster[dayName][afternoonRole] = [];
-        }
-
-        for (let roleIndex = 0; roleIndex < 4; roleIndex++) {
-          const morningRole = morningRoles[roleIndex];
-          const afternoonRole = afternoonRoles[roleIndex];
-
-          const availablePeopleForRole = availablePeople.filter((person) =>
-            person.roles.includes(`Role${roleIndex + 1}`)
-          );
-          const numberOfPeople = availablePeopleForRole.length;
-
-          if (numberOfPeople > 0) {
-            // Sort available people based on the number of shifts assigned (ascending order)
-            availablePeopleForRole.sort(
-              (a, b) =>
-                (shiftsAssigned.get(a.name) || 0) -
-                (shiftsAssigned.get(b.name) || 0)
+            roster[dayName][`morning_${morningRole}`] = [];
+          }
+          
+          for (const afternoonRole of afternoonRoles) {
+            roster[dayName][`afternoon_${afternoonRole}`] = [];
+          }
+          
+          for (let roleIndex = 0; roleIndex < morningRoles.length; roleIndex++) {
+            const morningRole = morningRoles[roleIndex];
+            const afternoonRole = afternoonRoles[roleIndex];
+          
+            const availablePeopleForRole = availablePeople.filter((person) =>
+              person.roles.includes(morningRole)
             );
-
-            // Assign shifts to available people
-            const morningIndex = i % numberOfPeople;
-            const afternoonIndex = (i + 1) % numberOfPeople;
-
-            roster[dayName][morningRole].push(
-              availablePeopleForRole[morningIndex].name
-            );
-            roster[dayName][afternoonRole].push(
-              availablePeopleForRole[afternoonIndex].name
-            );
-
-            // Update the number of shifts assigned to each person
-            shiftsAssigned.set(
-              availablePeopleForRole[morningIndex].name,
-              (shiftsAssigned.get(availablePeopleForRole[morningIndex].name) ||
-                0) + 1
-            );
-            shiftsAssigned.set(
-              availablePeopleForRole[afternoonIndex].name,
-              (shiftsAssigned.get(
+            const numberOfPeople = availablePeopleForRole.length;
+          
+            if (numberOfPeople > 0) {
+              // Sort available people based on the number of shifts assigned (ascending order)
+              availablePeopleForRole.sort(
+                (a, b) =>
+                  (shiftsAssigned.get(a.name) || 0) - (shiftsAssigned.get(b.name) || 0)
+              );
+          
+              // Assign shifts to available people
+              const morningIndex = i % numberOfPeople;
+              const afternoonIndex = (i + 1) % numberOfPeople;
+          
+              roster[dayName][`morning_${morningRole}`].push(
+                availablePeopleForRole[morningIndex].name
+              );
+              roster[dayName][`afternoon_${afternoonRole}`].push(
                 availablePeopleForRole[afternoonIndex].name
-              ) || 0) + 1
-            );
+              );
+          
+              // Update the number of shifts assigned to each person
+              shiftsAssigned.set(
+                availablePeopleForRole[morningIndex].name,
+                (shiftsAssigned.get(availablePeopleForRole[morningIndex].name) || 0) + 1
+              );
+              shiftsAssigned.set(
+                availablePeopleForRole[afternoonIndex].name,
+                (shiftsAssigned.get(availablePeopleForRole[afternoonIndex].name) || 0) + 1
+              );
+            }
           }
         }
-      }
       resolve(roster);
       return roster;
     });
@@ -178,6 +164,6 @@ export async function POST(req, res) {
 
   // Generate roster for the week starting from today
   const today = DateTime.local(2024, 2, 26);
-  const payload = await generateRoster(today)
-    return Response.json(payload)
+  const payload = await generateRoster(today);
+  return Response.json(payload);
 }

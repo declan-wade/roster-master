@@ -1,17 +1,15 @@
 // services/cookieService.js
 import Cookies from 'js-cookie';
 
-const COOKIE_NAME = 'myCookie';
-
-export const saveObjectToCookie = (data) => {
-  Cookies.set(COOKIE_NAME, JSON.stringify(data), { expires: 180 }); // Cookie expires in 7 days
+export const saveObjectToCookie = (data, cookie_name) => {
+  Cookies.set(cookie_name, JSON.stringify(data), { expires: 180 }); // Cookie expires in 7 days
 };
 
-export const getObjectFromCookie = () => {
-  const cookieData = Cookies.get(COOKIE_NAME);
+export const getObjectFromCookie = (cookie_name) => {
+  const cookieData = Cookies.get(cookie_name);
   return cookieData ? JSON.parse(cookieData) : null;
 };
 
-export const clearCookie = () => {
-  Cookies.remove(COOKIE_NAME);
+export const clearCookie = (cookie_name) => {
+  Cookies.remove(cookie_name);
 };
