@@ -143,6 +143,11 @@ export default function Page() {
           </tbody>
         </Table>
         <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
       </div>
       <footer className="footer fixed-bottom py-3 bg-light">
       <div className="container text-center">
