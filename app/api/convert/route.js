@@ -14,9 +14,17 @@ export async function POST(req, res) {
   const flatData = [];
   for (const day in data) {
     for (const shift in data[day]) {
-      data[day][shift].forEach((person) => {
-        flatData.push({ Day: day, Shift: shift, Person: person });
-      });
+      const shiftType = shift.startsWith("morning") ? "Morning" : "Afternoon";
+      const roleName = shift.split("_")[1];
+      const personList = data[day][shift];
+      for (const person of personList) {
+        flatData.push({
+          Day: day,
+          ShiftType: shiftType,
+          Shift: roleName,
+          Person: person,
+        });
+      }
     }
   }
 
@@ -33,5 +41,5 @@ export async function POST(req, res) {
     },
   });
 
-  return response
+  return response;
 }

@@ -1,9 +1,9 @@
 "use client";
 
 // components/PersonTable.js
-import React, { useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Table from "react-bootstrap/Table";
 
 export default function PersonTable(payload: any) {
@@ -26,7 +26,7 @@ export default function PersonTable(payload: any) {
                   <td>{`${item.name}`}</td>
                   <td>{`${item.roles}`}</td>
                   <td>{`${item.unavailabilities}`}</td>
-                  <td><Button size="sm" variant="danger">Delete</Button></td>
+                  <td><ButtonGroup><Button size="sm" variant="danger">Delete</Button><Button size="sm" variant="info">Edit</Button></ButtonGroup></td>
                 </tr>
               ))
             ) : (
