@@ -117,6 +117,7 @@ export default function Page() {
   
   const overrideShow = () => {
     setShowOffcanvas(false)
+    setEditPerson([])
   }
 
   React.useEffect(() => {

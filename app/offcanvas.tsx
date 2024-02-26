@@ -50,6 +50,7 @@ const PopoverForm: React.FC<Props> = ({
   useEffect(() => {
     setRoles(payload.roles);
     setName(payload.name);
+    setUnavailabilities(payload.unavailabilities)
   }, [payload]);
 
   const handleRoleAdd = () => {
@@ -59,6 +60,7 @@ const PopoverForm: React.FC<Props> = ({
 
   const handleClose = () => {
     setShow(false);
+    //setUnavailabilities([])
   };
 
   const handleUnavailabilityAdd = () => {
@@ -85,7 +87,6 @@ const PopoverForm: React.FC<Props> = ({
       </Offcanvas.Header>
       <Offcanvas.Body>
         {roles ? (
-          roles.length > 0 ? (
             <Form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <Form.Label className="form-label">Name</Form.Label>
@@ -208,9 +209,7 @@ const PopoverForm: React.FC<Props> = ({
           ) : (
             <div>No staff selected</div>
           )
-        ) : (
-          <div>No staff selected</div>
-        )}
+        }
       </Offcanvas.Body>
     </Offcanvas>
   );
