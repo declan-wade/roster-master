@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import { Suspense } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
-import { getObjectFromCookie } from "../cookieService";
+import { getObjectFromStorage} from '../storageService'
 import RosterTable from "./rosterTable";
 
 interface Roster {
@@ -14,7 +14,7 @@ interface Roster {
 }
 
 const Roster: React.FC = () => {
-  const roster: Roster | null = getObjectFromCookie("roster-cookie");
+  const roster: Roster | null = getObjectFromStorage("roster-cookie");
 
   const handleConvert = async () => {
     try {

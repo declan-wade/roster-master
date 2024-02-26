@@ -12,7 +12,7 @@ type Roles = Role[];
 type Unavailability = string;
 type Unavailabilities = Unavailability[];
 
-export default function PersonForm({ onSubmit }: any) {
+export default function PersonForm({ onSubmit, rolesList }: any) {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [unavailability, setUnavailability] = useState<Unavailability>("");
@@ -23,6 +23,8 @@ export default function PersonForm({ onSubmit }: any) {
   const [formValid, setFormValid] = useState(true);
   const [nameValid, setNameValid] = useState(true);
 
+
+  
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (name.length > 1) {
@@ -94,11 +96,17 @@ export default function PersonForm({ onSubmit }: any) {
             onChange={(e) => setRole(e.target.value)}
           >
             <option value="">Select Role</option>
-            <option value="Counter">Counter</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Phones">Phones</option>
-            <option value="O&R">O&R</option>
-            <option value="Building Referrals">Building Referrals</option>
+            {rolesList && rolesList.length > 0 ? (
+              rolesList.map((roleItem: any, index: any) => (
+                <option key={index} value={roleItem}>
+                  {roleItem}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                No roles available -  add a role at the bottom of the screen
+              </option>
+            )}
           </Form.Select>
           <Button
             type="button"
