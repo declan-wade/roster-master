@@ -279,7 +279,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                     </Button>
                 </div>
                 <ListGroup className="list-group mt-2">
-                    {wfhDays.map((u, index) => (
+                    { (wfhDays || []).map((u, index) => (
                         <ListGroup.Item
                             variant="info"
                             key={index}
