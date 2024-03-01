@@ -318,8 +318,8 @@ export default function Page() {
                               )
                             )}
                           </td>
-                          <td>{item.wfhDays.join(", ")}</td>{" "}
-                          {/* Assuming wfhDays is an array */}
+                          <td>{item.wfhDays?.join(", ") ?? "N/A"}</td>
+                          {" "}
                           <td className="align-middle">
                             <ButtonGroup>
                               <Button
