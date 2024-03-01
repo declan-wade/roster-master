@@ -55,6 +55,7 @@ export default function Page() {
 
   const handleSubmit = (person: any) => {
     setPayload((previous) => [...previous, person]);
+    toggleToast("Added person successfully!");
   };
 
   const onUpdate = (person: any) => {
@@ -77,7 +78,6 @@ export default function Page() {
 
   const handleRoleAdd = (myRoles: any) => {
     setRoleList(myRoles);
-    toggleToast("Saved successfully!");
   };
 
   const removeFromPayload = (nameToRemove: any) => {
@@ -91,6 +91,7 @@ export default function Page() {
     clearCookie("staff-cookie")
     clearCookie("roles-cookie")
     toggleToast("Cleared all cookies successfully!");
+    window.location.reload();
   }
 
   const handleClearStorage = () => {
@@ -323,7 +324,7 @@ export default function Page() {
                               )
                             )}
                           </td>
-                          <td>{item.wfhDays.map(
+                          <td>{item.wfhDays?.map(
                                   (u: any, index: number) => (
                                       <Badge
                                           key={index}

@@ -129,7 +129,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                             ))
                         ) : (
                             <option value="" disabled>
-                                No roles available - add a role at the bottom of the screen
+                                No roles available - add a role in the Role Manager at the bottom of the screen
                             </option>
                         )}
                     </Form.Select>
