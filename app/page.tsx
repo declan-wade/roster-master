@@ -12,6 +12,9 @@ import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PopoverForm from "./offcanvas";
+import ToastContainer from 'react-bootstrap/ToastContainer';
+import NavDropdown from "react-bootstrap/NavDropdown";
+import Nav from "react-bootstrap/Nav";
 import {
   saveObjectToCookie,
   getObjectFromCookie,
@@ -24,12 +27,14 @@ import {
 } from "./storageService";
 import RolesForm from "./roles";
 import { ButtonGroup } from "react-bootstrap";
+import Toast from 'react-bootstrap/Toast';
 
 export default function Page() {
   interface Person {
     name: string;
-    roles: string[];
+    roles: [];
     unavailabilities: string[];
+    wfhDays: [];
   }
 
   const [payload, setPayload] = useState<Person[]>([]);
@@ -40,9 +45,17 @@ export default function Page() {
   const [roleList, setRoleList] = useState([]);
   const [editPerson, setEditPerson] = useState([]);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
+  const toggleToast = (msg: string) => {
+    setToastMsg(msg)
+    setShowToast(!showToast);
+  }
 
   const handleSubmit = (person: any) => {
     setPayload((previous) => [...previous, person]);
+    toggleToast("Added person successfully!");
   };
 
   const onUpdate = (person: any) => {
@@ -53,12 +66,12 @@ export default function Page() {
         }
         return item;
       });
-  
+
       // If no matching item was found, add the new person to the payload array
       if (!updatedPayload.some((item) => item.name === person.name)) {
         updatedPayload.push(person);
       }
-  
+      toggleToast("Saved successfully!")
       return updatedPayload;
     });
   };
@@ -71,7 +84,20 @@ export default function Page() {
     setPayload((previous) =>
       previous.filter((person) => person.name !== nameToRemove)
     );
+    toggleToast("Removed successfully!");
   };
+
+  const handleClearCookies = () => {
+    clearCookie("staff-cookie")
+    clearCookie("roles-cookie")
+    toggleToast("Cleared all cookies successfully!");
+    window.location.reload();
+  }
+
+  const handleClearStorage = () => {
+    clearStorage("roster-cookie")
+    toggleToast("Cleared storage successfully!");
+  }
 
   const getNextMonday = () => {
     const currentDate = new Date();
@@ -114,17 +140,17 @@ export default function Page() {
       }
     }
   };
-  
+
   const overrideShow = () => {
-    setShowOffcanvas(false)
-    setEditPerson([])
-  }
+    setShowOffcanvas(false);
+    setEditPerson([]);
+  };
 
   React.useEffect(() => {
     if (editPerson && Object.keys(editPerson).length > 0) {
       setShowOffcanvas(true);
     }
-  console.log(editPerson);
+    console.log(editPerson);
   }, [editPerson]);
 
   React.useEffect(() => {
@@ -164,11 +190,39 @@ export default function Page() {
             />{" "}
             RosterMaster
           </Navbar.Brand>
+          <Nav className="me-auto" fill={true}>
+            <NavDropdown title="Tools" className="nav-item">
+              <NavDropdown.Item href="https://issue-form-two.vercel.app/">
+                📢 Report an Issue
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={handleClearCookies}>
+                🍪 Clear Cookies
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={handleClearStorage}>
+                📦 Clear Local Storage
+              </NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
         </Container>
       </Navbar>
-      <div className="container mt-5">
+      <ToastContainer
+          className="p-3"
+          position="top-end"
+          style={{ zIndex: 1000, position: 'fixed' }}
+
+      >
+      <Toast show={showToast} onClose={() => toggleToast("")} autohide={true} delay={3000} bg="success" >
+        <Toast.Header>
+          <strong className="me-auto">{toastMsg}</strong>
+        </Toast.Header>
+        <Toast.Body>
+
+          </Toast.Body>
+        </Toast>
+        </ToastContainer>
+        <div className="container mt-5">
         <h4>Add Staff Member</h4>
-        <PersonForm onSubmit={handleSubmit} rolesList={roleList}/>
+        <PersonForm onSubmit={handleSubmit} rolesList={roleList} />
         <br></br>
         <hr></hr>
         <h4>Generate Roster</h4>
@@ -199,7 +253,7 @@ export default function Page() {
             </Col>
             <Col>
               <Form.Label className="form-label">
-                Number of Weeks to Generate:
+                Number of Weeks to Generate (first week is always odd):
               </Form.Label>
               <Form.Control
                 type="number"
@@ -224,7 +278,8 @@ export default function Page() {
         <Accordion>
           <Accordion.Item eventKey="0">
             <Accordion.Header>
-              <h5>Staff List</h5>‎ ‎ ‎ ‎ <Badge>{payload ? payload.length : 0}</Badge>
+              <h5>Staff List</h5>‎ ‎ ‎ ‎{" "}
+              <Badge>{payload ? payload.length : 0}</Badge>
             </Accordion.Header>
             <Accordion.Body>
               <Table striped bordered hover>
@@ -233,6 +288,7 @@ export default function Page() {
                     <th>Name</th>
                     <th>Position / Role</th>
                     <th>Dates Unavailable</th>
+                    <th>Dates WFH</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -241,26 +297,58 @@ export default function Page() {
                     payload.length > 0 ? (
                       payload.map((item: any) => (
                         <tr key={`${item.name}`}>
-                          <td>{`${item.name}`}</td>
+                          <td>{item.name}</td>
                           <td>
-                            <Badge pill bg="primary">{`${item.roles}`}</Badge>
+                            {item.roles.map((role: string) => (
+                              <Badge
+                                key={role}
+                                pill
+                                bg="primary"
+                                className="me-1"
+                              >
+                                {role}
+                              </Badge> // Adding margin for spacing
+                            ))}
                           </td>
-                          <td>{`${item.unavailabilities}`}</td>
+                          <td>
+                            {item.unavailabilities.map(
+                              (u: any, index: number) => (
+                                <Badge
+                                  key={index}
+                                  pill
+                                  bg="info"
+                                  className="me-1"
+                                >{`${u.unavDay}${
+                                  u.dayType ? ` - ${u.dayType}` : ""
+                                }`}</Badge> // Adding margin for spacing
+                              )
+                            )}
+                          </td>
+                          <td>{item.wfhDays?.map(
+                                  (u: any, index: number) => (
+                                      <Badge
+                                          key={index}
+                                          pill
+                                          bg="secondary"
+                                          className="me-1"
+                                      >{u}</Badge> // Adding margin for spacing
+                                  )
+                              )
+                              ?? "N/A"}</td>
+                          {" "}
                           <td className="align-middle">
                             <ButtonGroup>
                               <Button
                                 size="sm"
                                 variant="danger"
-                                onClick={() =>
-                                  removeFromPayload(`${item.name}`)
-                                }
+                                onClick={() => removeFromPayload(item.name)}
                               >
                                 Delete
                               </Button>
-                              <Button size="sm" variant="info"
-                               onClick={() =>
-                                setEditPerson(item)
-                              }
+                              <Button
+                                size="sm"
+                                variant="info"
+                                onClick={() => setEditPerson(item)}
                               >
                                 Edit
                               </Button>
@@ -284,7 +372,8 @@ export default function Page() {
           </Accordion.Item>
           <Accordion.Item eventKey="1">
             <Accordion.Header>
-              <h5>Role Manager</h5>‎ ‎ ‎ ‎ <Badge>{roleList ? roleList.length: 0}</Badge>
+              <h5>Role Manager</h5>‎ ‎ ‎ ‎{" "}
+              <Badge>{roleList ? roleList.length : 0}</Badge>
             </Accordion.Header>
             <Accordion.Body>
               <RolesForm updateRoleList={handleRoleAdd} />
@@ -294,7 +383,13 @@ export default function Page() {
         <br></br>
         <hr></hr>
         <br></br>
-        <PopoverForm payload={editPerson} show={showOffcanvas} setShow={overrideShow} onUpdate={onUpdate} roleList={roleList}></PopoverForm>
+        <PopoverForm
+          payload={editPerson}
+          show={showOffcanvas}
+          setShow={overrideShow}
+          onUpdate={onUpdate}
+          roleList={roleList}
+        ></PopoverForm>
         <br></br>
         <br></br>
         <br></br>
@@ -304,7 +399,7 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v0.7 - Licensed under MIT - Made in Perth, Western
+            RosterMaster - v0.8 - Licensed under MIT - Made in Perth, Western
             Australia - Code available{" "}
             <a href="https://github.com/declan-wade/roster-master">here</a>
           </span>

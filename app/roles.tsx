@@ -5,27 +5,31 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import ListGroup from "react-bootstrap/ListGroup";
+import Stack from 'react-bootstrap/Stack';
 import {
   saveObjectToCookie,
   getObjectFromCookie,
   clearCookie,
 } from "./cookieService";
+import { Badge } from "react-bootstrap";
 
 interface RolesFormProps {
   updateRoleList: (roles: string[]) => void;
 }
 
-const RolesForm: React.FC<RolesFormProps> = ({updateRoleList}) => {
+const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
   const [role, setRole] = useState("");
-  const [roles, setRoles] = useState<string[]>([]);
+  const [isWfh, setIsWfh] = useState(false);
+  const [roles, setRoles] = useState<any>([]);
   const [formValid, setFormValid] = useState(true);
 
   const handleRoleAdd = () => {
     if (role.trim() !== "") {
-      setRoles([...roles, role.trim()]);
+      const newRole = { role: role.trim(), isWfh: isWfh }; // Create new role object
+      setRoles([...roles, newRole]); // Add new role object to roles array
       setRole("");
+      setIsWfh(false); // Reset isWfh to default value
       setFormValid(true); // Reset form validity
-      
     }
   };
 
@@ -36,15 +40,14 @@ const RolesForm: React.FC<RolesFormProps> = ({updateRoleList}) => {
     }
   }, []);
 
-
- useEffect(() => {
-  updateRoleList(roles);
-  console.log(roles)
-  if (roles.length === 0) {
-    console.warn("Roles list empty");
-  } else {
-    saveObjectToCookie(roles, "roles-cookie");
-  }
+  useEffect(() => {
+    updateRoleList(roles);
+    if (roles.length === 0) {
+      console.warn("Roles list empty");
+    } else {
+      saveObjectToCookie(roles, "roles-cookie");
+      console.log(roles);
+    }
   }, [roles]);
 
   const handleRoleDelete = (index: number) => {
@@ -54,34 +57,50 @@ const RolesForm: React.FC<RolesFormProps> = ({updateRoleList}) => {
   };
 
   return (
+    <div className="mb-3">
+      <h4>Role Manager</h4>
       <div className="mb-3">
-          <h4>Role Manager</h4>
-        <div className="mb-3">
-          <Form.Label className="form-label">Role</Form.Label>
-          <div className="input-group">
+        <Form.Label className="form-label">Role</Form.Label>
+        <div className="input-group">
           <Form.Control
             type="text"
             className="form-control"
             value={role}
             onChange={(e) => setRole(e.target.value)}
           />
-          <Button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleRoleAdd}
-          >
-            Add Role
-          </Button>
-          </div>
         </div>
-        <ListGroup className="list-group mt-2">
-          {roles.map((r, index) => (
+      </div>
+      <div className="mb-3">
+        <Form.Label className="form-label">WFH Compatible?</Form.Label>
+        <div>
+          <Form.Check
+            type="switch"
+            checked={isWfh}
+            onChange={(e) => setIsWfh(!isWfh)}
+          />
+        </div>
+      </div>
+      <div className="mb-3">
+        <Button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleRoleAdd}
+        >
+          Add Role
+        </Button>
+      </div>
+
+      <ListGroup className="list-group mt-2">
+        {roles && roles.length > 0 ? (
+          roles.map((roleObj: any, index: any) => (
             <ListGroup.Item
               variant="info"
               key={index}
               className="list-group-item d-flex justify-content-between align-items-center"
             >
-              {r}
+              <Stack direction="horizontal" gap={2}>
+              <>{roleObj.role}</> <Badge bg="secondary"> WFH Available? {roleObj.isWfh ? "Yes" : "No"}</Badge>
+              </Stack>
               <Button
                 variant="danger"
                 size="sm"
@@ -90,17 +109,21 @@ const RolesForm: React.FC<RolesFormProps> = ({updateRoleList}) => {
                 Delete
               </Button>
             </ListGroup.Item>
-          ))}
-        </ListGroup>
-        {!formValid ? (
-          <Alert variant="danger" className="mt-3">
-            Please add at least one role.
-          </Alert>
+          ))
         ) : (
-          <></>
+          <ListGroup.Item variant="info">No roles available</ListGroup.Item>
         )}
-      </div>
+      </ListGroup>
+
+      {!formValid ? (
+        <Alert variant="danger" className="mt-3">
+          Please add at least one role.
+        </Alert>
+      ) : (
+        <></>
+      )}
+    </div>
   );
-}
+};
 
 export default RolesForm;
