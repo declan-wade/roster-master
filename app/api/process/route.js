@@ -70,7 +70,7 @@ export async function POST(req, res) {
             const shiftsAssigned = new Map(); // Initialize shiftsAssigned map
 
             for (let week = 1;  week < parseInt(numberOfWeeks, 10) +1; week++) {
-                const currentWeekStartDate = startDate.plus({weeks: week});
+                const currentWeekStartDate = startDate.plus({weeks: week-1});
                 console.log("Processing week ", week)
                 for (let i = 0; i < 5; i++) {
                     const currentDate = currentWeekStartDate.plus({days: i});
