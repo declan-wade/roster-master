@@ -8,12 +8,8 @@ import Alert from "react-bootstrap/Alert";
 import ListGroup from "react-bootstrap/ListGroup";
 import InputGroup from "react-bootstrap/InputGroup";
 
-type Role = [];
-type Roles = Role[];
 type DayType = string;
 type UnavDay = string;
-type Unavailability = [];
-type Unavailabilities = Unavailability[];
 type wfhDay = string;
 type wfhDays = wfhDay[];
 

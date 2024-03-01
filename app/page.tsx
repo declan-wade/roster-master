@@ -45,11 +45,13 @@ export default function Page() {
   const [roleList, setRoleList] = useState([]);
   const [editPerson, setEditPerson] = useState([]);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
-  const toggleSaveSuccess = () => setSaveSuccess(!saveSuccess);
-  const toggleDeleteSuccess = () => setDeleteSuccess(!deleteSuccess);
+  const toggleToast = (msg: string) => {
+    setToastMsg(msg)
+    setShowToast(!showToast);
+  }
 
   const handleSubmit = (person: any) => {
     setPayload((previous) => [...previous, person]);
@@ -68,22 +70,33 @@ export default function Page() {
       if (!updatedPayload.some((item) => item.name === person.name)) {
         updatedPayload.push(person);
       }
-      toggleSaveSuccess()
+      toggleToast("Saved successfully!")
       return updatedPayload;
     });
   };
 
   const handleRoleAdd = (myRoles: any) => {
     setRoleList(myRoles);
-    toggleSaveSuccess();
+    toggleToast("Saved successfully!");
   };
 
   const removeFromPayload = (nameToRemove: any) => {
     setPayload((previous) =>
       previous.filter((person) => person.name !== nameToRemove)
     );
-    toggleDeleteSuccess();
+    toggleToast("Removed successfully!");
   };
+
+  const handleClearCookies = () => {
+    clearCookie("staff-cookie")
+    clearCookie("roles-cookie")
+    toggleToast("Cleared all cookies successfully!");
+  }
+
+  const handleClearStorage = () => {
+    clearStorage("roster-cookie")
+    toggleToast("Cleared storage successfully!");
+  }
 
   const getNextMonday = () => {
     const currentDate = new Date();
@@ -181,10 +194,10 @@ export default function Page() {
               <NavDropdown.Item href="https://issue-form-two.vercel.app/">
                 📢 Report an Issue
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={clearCookie}>
+              <NavDropdown.Item onClick={handleClearCookies}>
                 🍪 Clear Cookies
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={clearCookie}>
+              <NavDropdown.Item onClick={handleClearStorage}>
                 📦 Clear Local Storage
               </NavDropdown.Item>
             </NavDropdown>
@@ -197,19 +210,11 @@ export default function Page() {
           style={{ zIndex: 1000, position: 'fixed' }}
 
       >
-      <Toast show={saveSuccess} onClose={toggleSaveSuccess} autohide={true} delay={3000} bg="success" >
+      <Toast show={showToast} onClose={() => toggleToast("")} autohide={true} delay={3000} bg="success" >
         <Toast.Header>
-          <strong className="me-auto">Saved successfully</strong>
+          <strong className="me-auto">{toastMsg}</strong>
         </Toast.Header>
         <Toast.Body>
-
-        </Toast.Body>
-        </Toast>
-        <Toast show={deleteSuccess} onClose={toggleDeleteSuccess} autohide={true} delay={3000} bg="warning" >
-          <Toast.Header>
-            <strong className="me-auto">Saved successfully</strong>
-          </Toast.Header>
-          <Toast.Body>
 
           </Toast.Body>
         </Toast>
@@ -318,7 +323,17 @@ export default function Page() {
                               )
                             )}
                           </td>
-                          <td>{item.wfhDays?.join(", ") ?? "N/A"}</td>
+                          <td>{item.wfhDays.map(
+                                  (u: any, index: number) => (
+                                      <Badge
+                                          key={index}
+                                          pill
+                                          bg="secondary"
+                                          className="me-1"
+                                      >{u}</Badge> // Adding margin for spacing
+                                  )
+                              )
+                              ?? "N/A"}</td>
                           {" "}
                           <td className="align-middle">
                             <ButtonGroup>
