@@ -13,6 +13,7 @@ export async function POST(req, res) {
     // Function to check availability
     function isAvailable(person, date, week) {
         const unavailabilities = person.unavailabilities || [];
+        const wfhDays = person.wfhDays || []; // Handle potential empty array
         const currentDate = DateTime.fromISO(date);
 
         // Check unavailability by date and day type
@@ -24,9 +25,44 @@ export async function POST(req, res) {
             }
         }
         // Check if date is a WFH day and role is not allowed for WFH
-        return !(person.wfhDays.includes(date) && !person.roles.some((role) => role.isWFH));
-         // Available by default if no rules match
+        const isWfhDay = isDateWfhDay(currentDate, wfhDays);
+        if (isWfhDay && !person.roles.some((role) => role.isWFH)) {
+            return false;
+        }
+
+        // Available by default if no rules match
+        return true;
     }
+
+function isDateWfhDay(date, wfhDays) {
+    // Check for date among the different wfhDays formats
+    return wfhDays.some((day) => {
+        if (typeof day === 'string') {  // Date format
+            return date.toISODate() === day;
+        } else { // Day format
+            return isRepeatingDayUnavailable(date, day, date.weekNumber);
+        }
+    });
+}
+
+function isRepeatingDayUnavailable(date, repeatingDay, week) {
+    const dayOfWeek = date.weekdayLong; // e.g., "Monday"
+
+    if (repeatingDay === dayOfWeek) return true; // Exact match
+
+    // Handle Even/Odd weeks
+    const isEvenWeek = date.weekNumber % 2 === 0;
+    if (repeatingDay.startsWith('Even_') && isEvenWeek &&
+        repeatingDay.slice(5) === dayOfWeek) { // Remove "Even_" prefix
+        return true;
+    }
+    if (repeatingDay.startsWith('Odd_') && !isEvenWeek &&
+        repeatingDay.slice(4) === dayOfWeek) { // Remove "Odd_" prefix
+        return true;
+    }
+
+    return false;
+}
 
     function isAvailableHalfDay(person, date, week, dayType) {
         const unavailabilities = person.unavailabilities || [];

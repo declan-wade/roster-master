@@ -269,6 +269,47 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         value={wfhDay}
                         onChange={(e) => setWfhDay(e.target.value)}
                     />
+                    <InputGroup.Text>
+                        <strong>OR</strong>
+                    </InputGroup.Text>
+                    <Form.Select
+                        className="form-control"
+                        value={wfhDay}
+                        onChange={(e) => setWfhDay(e.target.value)}
+                    >
+                        <option>Choose a repeating day</option>
+                        <option value="Monday">Every Monday</option>
+                        <option value="Tuesday">Every Tuesday</option>
+                        <option value="Wednesday">Every Wednesday</option>
+                        <option value="Thursday">Every Thursday</option>
+                        <option value="Friday">Every Friday</option>
+                        <option value="Even_Monday">
+                            Fortnightly Monday (even weeks)
+                        </option>
+                        <option value="Even_Tuesday">
+                            Fortnightly Tuesday (even weeks)
+                        </option>
+                        <option value="Even_Wednesday">
+                            Fortnightly Wednesday (even weeks)
+                        </option>
+                        <option value="Even_Thursday">
+                            Fortnightly Thursday (even weeks)
+                        </option>
+                        <option value="Even_Friday">
+                            Fortnightly Friday (even weeks)
+                        </option>
+                        <option value="Odd_Monday">Fortnightly Monday (odd weeks)</option>
+                        <option value="Odd_Tuesday">
+                            Fortnightly Tuesday (odd weeks)
+                        </option>
+                        <option value="Odd_Wednesday">
+                            Fortnightly Wednesday (odd weeks)
+                        </option>
+                        <option value="Odd_Thursday">
+                            Fortnightly Thursday (odd weeks)
+                        </option>
+                        <option value="Odd_Friday">Fortnightly Friday (odd weeks)</option>
+                    </Form.Select>
                     <Button
                         type="button"
                         className="btn btn-primary"
