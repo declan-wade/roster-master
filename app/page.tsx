@@ -15,6 +15,7 @@ import PopoverForm from "./offcanvas";
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Nav from "react-bootstrap/Nav";
+import Modal from 'react-bootstrap/Modal';
 import {
   saveObjectToCookie,
   getObjectFromCookie,
@@ -28,6 +29,8 @@ import {
 import RolesForm from "./roles";
 import { ButtonGroup } from "react-bootstrap";
 import Toast from 'react-bootstrap/Toast';
+import BulkModal from "react-bootstrap/Modal";
+import BulkAdd from "@/app/bulkAdd";
 
 export default function Page() {
   interface Person {
@@ -47,6 +50,10 @@ export default function Page() {
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   const toggleToast = (msg: string) => {
     setToastMsg(msg)
@@ -282,6 +289,17 @@ export default function Page() {
               <Badge>{payload ? payload.length : 0}</Badge>
             </Accordion.Header>
             <Accordion.Body>
+              <Button variant="outline-primary" onClick={openModal}>Bulk import</Button>
+              <br></br>
+              <br></br>
+              <Modal show={showModal} onHide={closeModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Bulk Import Staff</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <BulkAdd existingArray={payload} onArrayUpdate={setPayload} closeModal={closeModal}></BulkAdd>
+                </Modal.Body>
+              </Modal>
               <Table striped bordered hover>
                 <thead>
                   <tr>
