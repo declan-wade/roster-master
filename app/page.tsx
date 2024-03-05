@@ -417,7 +417,7 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v0.8 - Licensed under MIT - Made in Perth, Western
+            RosterMaster - v0.9 - Licensed under MIT - Made in Perth, Western
             Australia - Code available{" "}
             <a href="https://github.com/declan-wade/roster-master">here</a>
           </span>
