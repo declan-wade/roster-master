@@ -14,14 +14,25 @@ export async function POST(req, res) {
   const flatData = [];
   for (const day in data) {
     for (const shift in data[day]) {
-      const shiftType = shift.startsWith("morning") ? "Morning" : "Afternoon";
-      const roleName = shift.split("_")[1];
+      let shiftType;
+      let roleName;
+
+      // Check if the shift is an all-day shift
+      if (!shift.startsWith("morning_") && !shift.startsWith("afternoon_")) {
+        shiftType = "All-Day";
+        roleName = shift; // For all-day shifts, the role name is the shift itself
+      } else {
+        // Determine shift type based on the prefix
+        shiftType = shift.startsWith("morning_") ? "Morning" : "Afternoon";
+        roleName = shift.split("_")[1]; // Extract role name for morning and afternoon shifts
+      }
+
       const personList = data[day][shift];
       for (const person of personList) {
         flatData.push({
           Day: day,
           ShiftType: shiftType,
-          Shift: roleName,
+          Role: roleName, // Changed from Shift to Role for clarity
           Person: person,
         });
       }
