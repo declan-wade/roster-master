@@ -8,6 +8,7 @@ import { getObjectFromStorage} from '../storageService'
 import RosterTable from "./rosterTable";
 import Modal from 'react-bootstrap/Modal';
 import * as DateTime from 'luxon';
+import ShiftStatistics from "@/app/roster/statistics";
 
 interface Roster {
   [day: string]: {
@@ -69,37 +70,6 @@ const Roster: React.FC = () => {
   const [weeklyShifts, setWeeklyShifts] = useState<WeeklyShiftCounts>({});
   const [weekMap, setWeekMap] = useState<{ [key: number]: string }>({}); // Initialize weekMap
 
-  React.useEffect(() => {
-    console.log("Calculating stats");
-    const calculateShifts = () => {
-      const shifts: WeeklyShiftCounts = {};
-      const weekMap = {}; // Keep track of week numbers
-
-      Object.keys(roster).forEach((dateString) => {
-        const date = DateTime.DateTime.fromISO(dateString);
-
-        // Ensure Monday start for weeks
-        let weekStart = date.startOf('week');
-        const weekNumber = weekStart.weekNumber;
-        const weekKey = `week${weekNumber}`;
-        console.log(weekKey)
-        weekMap[weekNumber] = weekStart.toISODate(); // Store week start dates
-        console.log(weekMap[weekNumber]);
-        const dayShifts = roster[dateString];
-        Object.values(dayShifts).forEach((shiftNames) => {
-          shiftNames.forEach((person) => {
-            shifts[person] = shifts[person] || {};
-            shifts[person][weekKey] = (shifts[person][weekKey] || 0) + 1;
-          });
-        });
-      });
-
-      setWeeklyShifts(shifts);
-    };
-
-    calculateShifts();
-  }, []);
-
   return (
     <div>
       
@@ -129,42 +99,13 @@ const Roster: React.FC = () => {
             </Navbar.Collapse>
           </Container>
         </Navbar>
-        <Modal show={showModal} onHide={closeModal}>
+        <Modal className="modal-dialog modal-xl" show={showModal} onHide={closeModal}>
           <Modal.Header closeButton>
             <Modal.Title>Modal heading</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div>
-              {weeklyShifts && weekMap && (
-                  <table>
-                    <thead>
-                    <tr>
-                      <th>Person</th>
-                      {Object.values(weekMap).map((weekStartDate) => (
-                          <th key={weekStartDate}>
-                            Week of {weekStartDate}
-                          </th>
-                      ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {Object.keys(weeklyShifts).map((person) => (
-                        <tr key={person}>
-                          <td>{person}</td>
-                          {/* Iterate over weeks dynamically */}
-                          {Object.values(weekMap).map((_, weekIndex) => {
-                            const weekKey = `week${weekIndex + 1}`; // Calculate week keys
-                            return (
-                                <td key={weekKey}>
-                                  {weeklyShifts[person][weekKey] || 0}
-                                </td>
-                            );
-                          })}
-                        </tr>
-                    ))}
-                    </tbody>
-                  </table>
-              )}
+             <ShiftStatistics />
             </div>
           </Modal.Body>
           <Modal.Footer>

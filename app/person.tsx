@@ -24,7 +24,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
     const [formValid, setFormValid] = useState(true);
     const [nameValid, setNameValid] = useState(true);
     const [dayType, setDayType] = useState<DayType>("All-Day");
-    const [weight, setWeight] = useState<Any>(100);
+    const [weight, setWeight] = useState<any>(100);
     const [unavDay, setUnavDay] = useState<UnavDay>("");
 
     const handleSubmit = (e: any) => {
