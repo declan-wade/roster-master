@@ -35,12 +35,13 @@ const PopoverForm: React.FC<Props> = ({
     const [unavDay, setUnavDay] = useState<UnavDay>("");
     const [wfhDays, setWfhDays] = useState<wfhDays>([]);
     const [wfhDay, setWfhDay] = useState<wfhDay>("");
+    const [weight, setWeight] = useState(100)
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (name.length > 1) {
             if (roles.length > 0) {
-                const person = {name, roles, unavailabilities, wfhDays};
+                const person = {name, roles, unavailabilities, wfhDays, weight};
                 onUpdate(person);
                 // Clear form fields
                 handleClose();
@@ -63,6 +64,7 @@ const PopoverForm: React.FC<Props> = ({
         setName(payload.name);
         setUnavailabilities(payload.unavailabilities);
         setWfhDays(payload.wfhDays);
+        setWeight(payload.weight);
     }, [payload]);
 
     const handleRoleAdd = () => {
@@ -287,94 +289,107 @@ const PopoverForm: React.FC<Props> = ({
                       <br></br>
                       <hr></hr>
                       <br></br>
-                      <div className="mb-3">
-                        <Form.Label className="form-label">WFH Days</Form.Label>
-                          <InputGroup className="mb-3">
-                          <Form.Control
-                              type="date"
-                              className="form-control"
-                              value={wfhDay}
-                              onChange={(e) => setWfhDay(e.target.value)}
-                          />
-                            <InputGroup.Text>
-                                <strong>OR</strong>
-                            </InputGroup.Text>
-                          </InputGroup>
-                          <InputGroup className="mb-3">
-                              <Form.Select
-                                  className="form-control"
-                                  value={wfhDay}
-                                  onChange={(e) => setWfhDay(e.target.value)}
-                              >
-                                  <option>Choose a repeating day</option>
-                                  <option value="Monday">Every Monday</option>
-                                  <option value="Tuesday">Every Tuesday</option>
-                                  <option value="Wednesday">Every Wednesday</option>
-                                  <option value="Thursday">Every Thursday</option>
-                                  <option value="Friday">Every Friday</option>
-                                  <option value="Even_Monday">
-                                      Fortnightly Monday (even weeks)
-                                  </option>
-                                  <option value="Even_Tuesday">
-                                      Fortnightly Tuesday (even weeks)
-                                  </option>
-                                  <option value="Even_Wednesday">
-                                      Fortnightly Wednesday (even weeks)
-                                  </option>
-                                  <option value="Even_Thursday">
-                                      Fortnightly Thursday (even weeks)
-                                  </option>
-                                  <option value="Even_Friday">
-                                      Fortnightly Friday (even weeks)
-                                  </option>
-                                  <option value="Odd_Monday">Fortnightly Monday (odd weeks)</option>
-                                  <option value="Odd_Tuesday">
-                                      Fortnightly Tuesday (odd weeks)
-                                  </option>
-                                  <option value="Odd_Wednesday">
-                                      Fortnightly Wednesday (odd weeks)
-                                  </option>
-                                  <option value="Odd_Thursday">
-                                      Fortnightly Thursday (odd weeks)
-                                  </option>
-                                  <option value="Odd_Friday">Fortnightly Friday (odd weeks)</option>
-                              </Form.Select>
-                          </InputGroup>
-                          <Button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={handleWfhAdd}
-                              disabled={wfhDay.length <= 0}
-                          >
-                            Add WFH Day
-                          </Button>
-
-
-                        <ListGroup className="list-group mt-2">
-                          {wfhDays.map((u, index) => (
-                              <ListGroup.Item
-                                  variant="info"
-                                  key={index}
-                                  className="list-group-item d-flex justify-content-between align-items-center"
-                              >
-                                {u}
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleWfhDelete(index)}
+                        <div className="mb-3">
+                            <Form.Label className="form-label">WFH Days</Form.Label>
+                            <InputGroup className="mb-3">
+                                <Form.Control
+                                    type="date"
+                                    className="form-control"
+                                    value={wfhDay}
+                                    onChange={(e) => setWfhDay(e.target.value)}
+                                />
+                                <InputGroup.Text>
+                                    <strong>OR</strong>
+                                </InputGroup.Text>
+                            </InputGroup>
+                            <InputGroup className="mb-3">
+                                <Form.Select
+                                    className="form-control"
+                                    value={wfhDay}
+                                    onChange={(e) => setWfhDay(e.target.value)}
                                 >
-                                  Delete
-                                </Button>
-                              </ListGroup.Item>
-                          ))}
-                        </ListGroup>
-                        <hr></hr>
-                      </div>
-                    <Button type="submit">Save</Button>
+                                    <option>Choose a repeating day</option>
+                                    <option value="Monday">Every Monday</option>
+                                    <option value="Tuesday">Every Tuesday</option>
+                                    <option value="Wednesday">Every Wednesday</option>
+                                    <option value="Thursday">Every Thursday</option>
+                                    <option value="Friday">Every Friday</option>
+                                    <option value="Even_Monday">
+                                        Fortnightly Monday (even weeks)
+                                    </option>
+                                    <option value="Even_Tuesday">
+                                        Fortnightly Tuesday (even weeks)
+                                    </option>
+                                    <option value="Even_Wednesday">
+                                        Fortnightly Wednesday (even weeks)
+                                    </option>
+                                    <option value="Even_Thursday">
+                                        Fortnightly Thursday (even weeks)
+                                    </option>
+                                    <option value="Even_Friday">
+                                        Fortnightly Friday (even weeks)
+                                    </option>
+                                    <option value="Odd_Monday">Fortnightly Monday (odd weeks)</option>
+                                    <option value="Odd_Tuesday">
+                                        Fortnightly Tuesday (odd weeks)
+                                    </option>
+                                    <option value="Odd_Wednesday">
+                                        Fortnightly Wednesday (odd weeks)
+                                    </option>
+                                    <option value="Odd_Thursday">
+                                        Fortnightly Thursday (odd weeks)
+                                    </option>
+                                    <option value="Odd_Friday">Fortnightly Friday (odd weeks)</option>
+                                </Form.Select>
+                            </InputGroup>
+                            <Button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={handleWfhAdd}
+                                disabled={wfhDay.length <= 0}
+                            >
+                                Add WFH Day
+                            </Button>
+
+
+                            <ListGroup className="list-group mt-2">
+                                {wfhDays.map((u, index) => (
+                                    <ListGroup.Item
+                                        variant="info"
+                                        key={index}
+                                        className="list-group-item d-flex justify-content-between align-items-center"
+                                    >
+                                        {u}
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            onClick={() => handleWfhDelete(index)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                            <hr></hr>
+                            <div className="mb-3">
+                                <ListGroup className="list-group mt-2">
+                                    <Form.Label className="form-label">Weighting % - smaller value will de-prioritise
+                                        this person from being assigned a role.</Form.Label>
+                                    <Form.Control
+                                        value={weight}
+                                        type="number"
+                                        min="10"
+                                        max="100"
+                                        step="10"
+                                        onChange={(e) => setWeight(e.target.value)}/>
+                                </ListGroup>
+                            </div>
+                        </div>
+                        <Button type="submit">Save</Button>
                     </Form>
                 ) : (
                     <div>
-                      No staff selected
+                        No staff selected
                     </div>
                 )
                 }

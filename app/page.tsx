@@ -128,7 +128,7 @@ export default function Page() {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({"staffData": payload, "rolesData": roleList} ),
           }
         );
 
@@ -307,6 +307,7 @@ export default function Page() {
                     <th>Position / Role</th>
                     <th>Dates Unavailable</th>
                     <th>Dates WFH</th>
+                    <th>Weighting</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -354,6 +355,9 @@ export default function Page() {
                               )
                               ?? "N/A"}</td>
                           {" "}
+                          <td>{item.weight? `${item.weight}` : "N/A"}
+                          {" "}
+                          </td>
                           <td className="align-middle">
                             <ButtonGroup>
                               <Button

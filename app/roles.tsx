@@ -20,15 +20,17 @@ interface RolesFormProps {
 const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
   const [role, setRole] = useState("");
   const [isWfh, setIsWfh] = useState(false);
+  const [isAllDay, setIsAllDay] = useState(false);
   const [roles, setRoles] = useState<any>([]);
   const [formValid, setFormValid] = useState(true);
 
   const handleRoleAdd = () => {
     if (role.trim() !== "") {
-      const newRole = { role: role.trim(), isWfh: isWfh }; // Create new role object
+      const newRole = { role: role.trim(), isWfh: isWfh, isAllDay: isAllDay }; // Create new role object
       setRoles([...roles, newRole]); // Add new role object to roles array
       setRole("");
       setIsWfh(false); // Reset isWfh to default value
+      setIsAllDay(false)
       setFormValid(true); // Reset form validity
     }
   };
@@ -81,6 +83,16 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
         </div>
       </div>
       <div className="mb-3">
+        <Form.Label className="form-label">All day?</Form.Label>
+        <div>
+          <Form.Check
+            type="switch"
+            checked={isAllDay}
+            onChange={(e) => setIsAllDay(!isAllDay)}
+          />
+        </div>
+      </div>
+      <div className="mb-3">
         <Button
           type="button"
           className="btn btn-primary"
@@ -99,7 +111,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
               className="list-group-item d-flex justify-content-between align-items-center"
             >
               <Stack direction="horizontal" gap={2}>
-              <>{roleObj.role}</> <Badge bg="secondary"> WFH Available? {roleObj.isWfh ? "Yes" : "No"}</Badge>
+              <>{roleObj.role}</> <Badge bg="secondary"> WFH Available? {roleObj.isWfh ? "Yes" : "No"}</Badge><Badge bg="warning"> All-Day? {roleObj.isAllDay ? "Yes": "No"}</Badge>
               </Stack>
               <Button
                 variant="danger"

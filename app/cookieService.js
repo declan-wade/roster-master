@@ -7,6 +7,7 @@ export const saveObjectToCookie = (data, cookie_name) => {
 
 export const getObjectFromCookie = (cookie_name) => {
   const cookieData = Cookies.get(cookie_name);
+  console.log(cookieData);
   return cookieData ? JSON.parse(cookieData) : null;
 };
 

@@ -24,16 +24,18 @@ export default function PersonForm({onSubmit, rolesList}: any) {
     const [formValid, setFormValid] = useState(true);
     const [nameValid, setNameValid] = useState(true);
     const [dayType, setDayType] = useState<DayType>("All-Day");
+    const [weight, setWeight] = useState<Any>(100);
     const [unavDay, setUnavDay] = useState<UnavDay>("");
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
         if (name.length > 1) {
             if (roles.length > 0) {
-                const person = {name, roles, unavailabilities, wfhDays};
+                const person = {name, roles, unavailabilities, wfhDays, weight};
                 onSubmit(person);
                 // Clear form fields
                 setName("");
+                setWeight(100)
                 setRole("");
                 setDayType("All-Day")
                 setUnavDay("");
@@ -337,6 +339,18 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
+                <div className="mb-3">
+                    <ListGroup className="list-group mt-2">
+                    <Form.Label className="form-label">Weighting % - smaller value will de-prioritise this person from being assigned a role.</Form.Label>
+                    <Form.Control
+                        value={weight}
+                        type="number"
+                        min="10"
+                        max="100"
+                        step="10"
+                        onChange={(e) => setWeight(e.target.value)}/>
+                    </ListGroup>
+                </div>
             </div>
             <Button type="submit" className="btn btn-primary">
                 Add Person to Roster
