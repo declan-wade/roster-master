@@ -1,11 +1,14 @@
 "use client";
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Container from "react-bootstrap/Container";
 import { Suspense } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import { getObjectFromStorage} from '../storageService'
 import RosterTable from "./rosterTable";
+import Modal from 'react-bootstrap/Modal';
+import * as DateTime from 'luxon';
+import ShiftStatistics from "@/app/roster/statistics";
 
 interface Roster {
   [day: string]: {
@@ -13,8 +16,19 @@ interface Roster {
   };
 }
 
+interface WeeklyShiftCounts {
+  [person: string]: {
+    week1: number;
+    week2: number; // Add more weeks if needed
+  };
+}
+
 const Roster: React.FC = () => {
   const roster: Roster | null = getObjectFromStorage("roster-cookie");
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   const handleConvert = async () => {
     try {
@@ -53,6 +67,9 @@ const Roster: React.FC = () => {
     }
   };
 
+  const [weeklyShifts, setWeeklyShifts] = useState<WeeklyShiftCounts>({});
+  const [weekMap, setWeekMap] = useState<{ [key: number]: string }>({}); // Initialize weekMap
+
   return (
     <div>
       
@@ -69,18 +86,38 @@ const Roster: React.FC = () => {
               RosterMaster
             </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-              <Navbar.Text>
+              <Navbar.Text className="me-3">
                 <Button variant="success" onClick={handleConvert}>
                   Download to Excel
+                </Button>
+              </Navbar.Text>
+              <Navbar.Text>
+                <Button variant="warning" onClick={openModal}>
+                  Statistics
                 </Button>
               </Navbar.Text>
             </Navbar.Collapse>
           </Container>
         </Navbar>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Modal className="modal-lg" centered scrollable show={showModal} onHide={closeModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Roster Statistics</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div>
+             <ShiftStatistics />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closeModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      <Suspense fallback={<div>Loading...</div>}>
         <RosterTable></RosterTable>
-        </Suspense>
-        </div>
+      </Suspense>
+    </div>
   );
 };
 
