@@ -30,7 +30,17 @@ interface Roster {
         [shift: string]: string[];
     };
 }
+interface Shifts {
+    [key: string]: string[]; // Assuming each key in shifts maps to an array of person names
+}
 
+interface CountMap {
+    [key: string]: number; // Maps a week or dayOfWeek to a count
+}
+
+interface DataMap {
+    [personName: string]: CountMap; // Maps a person name to their CountMap
+}
 
 const ShiftStatistics= () => {
     const data: Roster | null = getObjectFromStorage("roster-cookie");
@@ -44,13 +54,13 @@ const ShiftStatistics= () => {
 
     useEffect(() => {
         console.log(data)
-        const tempWeeklyData = {};
-        const tempDailyData = {};
+        const tempWeeklyData: DataMap  = {};
+        const tempDailyData: DataMap  = {};
 
         Object.entries(data as any).forEach(([date, shifts]) => {
             const dayOfWeek = new Date(date).toLocaleDateString('en-AU', { weekday: 'long' });
 
-            Object.values(shifts as any).flat().forEach((person) => {
+            Object.values(shifts as any).flat().forEach((person: any) => {
                 if (!tempWeeklyData[person]) tempWeeklyData[person] = {};
                 if (!tempWeeklyData[person][week]) tempWeeklyData[person][week] = 0;
                 tempWeeklyData[person][week] += 1;
