@@ -99,9 +99,9 @@ const Roster: React.FC = () => {
             </Navbar.Collapse>
           </Container>
         </Navbar>
-        <Modal className="modal-dialog modal-xl" show={showModal} onHide={closeModal}>
+        <Modal className="modal-lg" centered scrollable show={showModal} onHide={closeModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
+            <Modal.Title>Roster Statistics</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div>

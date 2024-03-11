@@ -73,6 +73,8 @@ const ShiftStatistics= () => {
 
         setWeeklyData(tempWeeklyData);
         setDailyData(tempDailyData);
+        console.log(tempWeeklyData);
+        console.log(tempDailyData);
     }, []);
 
     const generateChartData = (data: any) => {
