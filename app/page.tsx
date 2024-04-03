@@ -301,7 +301,6 @@ export default function Page() {
                   <Modal.Title>Bulk Import Staff</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  // @ts-ignore
                   <BulkAdd existingArray={payload} onArrayUpdate={setPayload} closeModal={closeModal}></BulkAdd>
                 </Modal.Body>
               </Modal>
