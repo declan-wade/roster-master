@@ -24,12 +24,10 @@ import {
 import {
   saveObjectToStorage,
   clearStorage,
-  getObjectFromStorage,
 } from "./storageService";
 import RolesForm from "./roles";
 import { ButtonGroup } from "react-bootstrap";
 import Toast from 'react-bootstrap/Toast';
-import BulkModal from "react-bootstrap/Modal";
 import BulkAdd from "@/app/bulkAdd";
 
 export default function Page() {
@@ -38,6 +36,7 @@ export default function Page() {
     roles: [];
     unavailabilities: string[];
     wfhDays: [];
+    weight: number
   }
 
   const [payload, setPayload] = useState<Person[]>([]);
@@ -51,6 +50,7 @@ export default function Page() {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [doubleShiftFlag, setDoubleShiftFlag] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -124,7 +124,7 @@ export default function Page() {
         const response = await fetch(
           `/api/process?startDate=${encodeURIComponent(
             startDate
-          )}&numWeeks=${encodeURIComponent(numWeeks)}`,
+          )}&numWeeks=${encodeURIComponent(numWeeks)}&doubleShiftFlag=${encodeURIComponent(doubleShiftFlag)}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -133,12 +133,12 @@ export default function Page() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to send POST request");
+          new Error("Failed to send POST request");
         }
         setRoster(await response.json());
         console.log("POST request successful");
         window.open(
-          `/roster?startDate=${encodeURIComponent(startDate)}`,
+          `/roster`,
           "_ blank"
         );
       } catch (error) {
@@ -175,6 +175,10 @@ export default function Page() {
       saveObjectToCookie(payload, "staff-cookie");
     }
   }, [payload]);
+
+  React.useEffect(() => {
+      saveObjectToCookie({"doubleShiftFlag": doubleShiftFlag}, "settings-cookie");
+  }, [doubleShiftFlag]);
 
   React.useEffect(() => {
     const objectFromCookie = getObjectFromCookie("staff-cookie");
@@ -380,12 +384,12 @@ export default function Page() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={4}>No staff added to roster</td>
+                        <td colSpan={6}>No staff added to roster</td>
                       </tr>
                     )
                   ) : (
                     <tr>
-                      <td colSpan={4}>Loading...</td>
+                      <td colSpan={6}>Loading...</td>
                     </tr>
                   )}
                 </tbody>
@@ -401,16 +405,33 @@ export default function Page() {
               <RolesForm updateRoleList={handleRoleAdd} />
             </Accordion.Body>
           </Accordion.Item>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>
+              <h5>Settings</h5>
+            </Accordion.Header>
+            <Accordion.Body>
+              <div className="mb-3">
+                <Form.Label className="form-label">Prevent staff from being assigned more than one shift per day.</Form.Label>
+                <div>
+                  <Form.Check
+                      type="switch"
+                      checked={doubleShiftFlag}
+                      onChange={() => setDoubleShiftFlag(!doubleShiftFlag)}
+                  />
+                </div>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
         </Accordion>
-        <br></br>
-        <hr></hr>
-        <br></br>
-        <PopoverForm
-          payload={editPerson}
-          show={showOffcanvas}
-          setShow={overrideShow}
-          onUpdate={onUpdate}
-          roleList={roleList}
+          <br></br>
+          <hr></hr>
+          <br></br>
+          <PopoverForm
+              payload={editPerson}
+              show={showOffcanvas}
+              setShow={overrideShow}
+              onUpdate={onUpdate}
+              roleList={roleList}
         ></PopoverForm>
         <br></br>
         <br></br>
@@ -421,7 +442,7 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v0.9 - Licensed under MIT - Made in Perth, Western
+            RosterMaster - v0.11 - Licensed under MIT - Made in Perth, Western
             Australia - Code available{" "}
             <a href="https://github.com/declan-wade/roster-master">here</a>
           </span>

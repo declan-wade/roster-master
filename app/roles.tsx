@@ -9,7 +9,6 @@ import Stack from 'react-bootstrap/Stack';
 import {
   saveObjectToCookie,
   getObjectFromCookie,
-  clearCookie,
 } from "./cookieService";
 import { Badge } from "react-bootstrap";
 
@@ -60,7 +59,6 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
 
   return (
     <div className="mb-3">
-      <h4>Role Manager</h4>
       <div className="mb-3">
         <Form.Label className="form-label">Role</Form.Label>
         <div className="input-group">
@@ -78,7 +76,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
           <Form.Check
             type="switch"
             checked={isWfh}
-            onChange={(e) => setIsWfh(!isWfh)}
+            onChange={() => setIsWfh(!isWfh)}
           />
         </div>
       </div>
@@ -88,7 +86,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
           <Form.Check
             type="switch"
             checked={isAllDay}
-            onChange={(e) => setIsAllDay(!isAllDay)}
+            onChange={() => setIsAllDay(!isAllDay)}
           />
         </div>
       </div>

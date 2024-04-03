@@ -7,6 +7,7 @@ interface Person {
     roles: [];
     unavailabilities: string[];
     wfhDays: [];
+    weight: number
 }
 
 interface Props {
@@ -31,6 +32,7 @@ const BulkAdd: React.FC<Props> = ({existingArray, onArrayUpdate, closeModal}) =>
             roles: [],
             unavailabilities: [],
             wfhDays: [],
+            weight: 100,
         }));
 
         setPeople([...people, ...newPeople]);
