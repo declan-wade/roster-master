@@ -385,12 +385,12 @@ export default function Page() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={4}>No staff added to roster</td>
+                        <td colSpan={6}>No staff added to roster</td>
                       </tr>
                     )
                   ) : (
                     <tr>
-                      <td colSpan={4}>Loading...</td>
+                      <td colSpan={6}>Loading...</td>
                     </tr>
                   )}
                 </tbody>
