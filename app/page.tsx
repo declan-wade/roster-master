@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 import Accordion from "react-bootstrap/Accordion";
 import Alert from "react-bootstrap/Alert";
+import { Tooltip } from 'react-tooltip'
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PopoverForm from "./offcanvas";
@@ -246,6 +247,9 @@ export default function Page() {
               <div className="input-group">
                 <Form.Control
                   type="date"
+                  data-tooltip-id="gen-day"
+                  data-tooltip-html="Select the start day for the roster."
+                  data-tooltip-place="top"
                   step="7"
                   className="form-control"
                   min={getNextMonday()}
@@ -253,6 +257,7 @@ export default function Page() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
+                <Tooltip id="gen-day" />
               </div>
               {!formValid ? (
                 <Alert variant="danger" className="mt-3">
@@ -280,18 +285,29 @@ export default function Page() {
         </Container>
 
         <br></br>
-        <Button variant="warning" onClick={handleGenerate}>
+        <Button 
+        variant="warning" 
+        data-tooltip-id="gen-btn"
+        data-tooltip-content="Generate the roster in a new tab."
+        data-tooltip-place="top"
+        onClick={handleGenerate}>
           Generate Roster
         </Button>
+        <Tooltip id="gen-btn" />
         <br></br>
         <hr></hr>
         <br></br>
         <Accordion>
           <Accordion.Item eventKey="0">
-            <Accordion.Header>
+            <Accordion.Header
+            data-tooltip-id="acc-staff"
+            data-tooltip-html="This is where you can manage and edit the staff you have created."
+            data-tooltip-place="top"
+            >
               <h5>Staff List</h5>‎ ‎ ‎ ‎{" "}
               <Badge>{payload ? payload.length : 0}</Badge>
             </Accordion.Header>
+            <Tooltip id="acc-staff" />
             <Accordion.Body>
               <Button variant="outline-primary" onClick={openModal}>Bulk import</Button>
               <br></br>
@@ -397,21 +413,32 @@ export default function Page() {
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="1">
-            <Accordion.Header>
+            <Accordion.Header
+             data-tooltip-id="acc-roles"
+             data-tooltip-html="This is where you can define the different roles a person can be assigned to."
+             data-tooltip-place="top"
+            >
               <h5>Role Manager</h5>‎ ‎ ‎ ‎{" "}
               <Badge>{roleList ? roleList.length : 0}</Badge>
             </Accordion.Header>
+            <Tooltip id="acc-roles" />
             <Accordion.Body>
               <RolesForm updateRoleList={handleRoleAdd} />
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2">
-            <Accordion.Header>
+            <Accordion.Header
+              data-tooltip-id="acc-setting"
+              data-tooltip-html="Manage advanced options and settings."
+              data-tooltip-place="top"
+              >
               <h5>Settings</h5>
             </Accordion.Header>
+            <Tooltip id="acc-setting" />
             <Accordion.Body>
               <div className="mb-3">
-                <Form.Label className="form-label">Prevent staff from being assigned more than one shift per day.</Form.Label>
+                <Form.Label 
+                className="form-label">Prevent staff from being assigned more than one shift per day.</Form.Label>
                 <div>
                   <Form.Check
                       type="switch"
@@ -442,7 +469,7 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v0.11 - Licensed under MIT - Made in Perth, Western
+            RosterMaster - v0.12 - Licensed under MIT - Made in Perth, Western
             Australia - Code available{" "}
             <a href="https://github.com/declan-wade/roster-master">here</a>
           </span>

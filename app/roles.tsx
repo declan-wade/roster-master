@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
+import { Tooltip } from "react-tooltip";
 import ListGroup from "react-bootstrap/ListGroup";
-import Stack from 'react-bootstrap/Stack';
-import {
-  saveObjectToCookie,
-  getObjectFromCookie,
-} from "./cookieService";
+import Stack from "react-bootstrap/Stack";
+import { saveObjectToCookie, getObjectFromCookie } from "./cookieService";
 import { Badge } from "react-bootstrap";
 
 interface RolesFormProps {
@@ -29,7 +27,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
       setRoles([...roles, newRole]); // Add new role object to roles array
       setRole("");
       setIsWfh(false); // Reset isWfh to default value
-      setIsAllDay(false)
+      setIsAllDay(false);
       setFormValid(true); // Reset form validity
     }
   };
@@ -60,14 +58,23 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
   return (
     <div className="mb-3">
       <div className="mb-3">
-        <Form.Label className="form-label">Role</Form.Label>
+        <Form.Label
+          className="form-label"
+        >
+          Role
+        </Form.Label>
+        
         <div className="input-group">
           <Form.Control
+            data-tooltip-id="role-name"
+            data-tooltip-html="A descriptive name for the role<br />(e.g. Phones, Supervisor, Cleaner, etc."
+            data-tooltip-place="top"
             type="text"
             className="form-control"
             value={role}
             onChange={(e) => setRole(e.target.value)}
           />
+          <Tooltip id="role-name" />
         </div>
       </div>
       <div className="mb-3">
@@ -75,19 +82,27 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
         <div>
           <Form.Check
             type="switch"
+            data-tooltip-id="wfh-switch"
+            data-tooltip-html="Whether a staff member can be assigned this role when working from home.<br /> To be used in conjunction with the 'wroking-from-home availability."
+            data-tooltip-place="top"
             checked={isWfh}
             onChange={() => setIsWfh(!isWfh)}
           />
+          <Tooltip id="wfh-switch" />
         </div>
       </div>
       <div className="mb-3">
         <Form.Label className="form-label">All day?</Form.Label>
         <div>
           <Form.Check
+            data-tooltip-id="allday-switch"
+            data-tooltip-html="Whether this role has morning and afternoon<br />shifts (default), or is only for a full-day."
+            data-tooltip-place="top"
             type="switch"
             checked={isAllDay}
             onChange={() => setIsAllDay(!isAllDay)}
           />
+          <Tooltip id="allday-switch" />
         </div>
       </div>
       <div className="mb-3">
@@ -109,7 +124,15 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
               className="list-group-item d-flex justify-content-between align-items-center"
             >
               <Stack direction="horizontal" gap={2}>
-              <>{roleObj.role}</> <Badge bg="secondary"> WFH Available? {roleObj.isWfh ? "Yes" : "No"}</Badge><Badge bg="warning"> All-Day? {roleObj.isAllDay ? "Yes": "No"}</Badge>
+                <>{roleObj.role}</>{" "}
+                <Badge bg="secondary">
+                  {" "}
+                  WFH Available? {roleObj.isWfh ? "Yes" : "No"}
+                </Badge>
+                <Badge bg="warning">
+                  {" "}
+                  All-Day? {roleObj.isAllDay ? "Yes" : "No"}
+                </Badge>
               </Stack>
               <Button
                 variant="danger"

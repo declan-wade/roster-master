@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import ListGroup from "react-bootstrap/ListGroup";
 import InputGroup from "react-bootstrap/InputGroup";
+import { Tooltip } from 'react-tooltip'
 
 type DayType = string;
 type UnavDay = string;
@@ -102,10 +103,14 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 <Form.Label className="form-label">Name</Form.Label>
                 <Form.Control
                     type="text"
+                    data-tooltip-id="staff-name"
+                    data-tooltip-html="The name or alias of the person."
+                    data-tooltip-place="top"
                     className="form-control"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
+                <Tooltip id="staff-name" />
             </div>
             {!nameValid ? (
                 <Alert variant="danger" className="mt-3">
@@ -118,10 +123,14 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 <Form.Label className="form-label">Role</Form.Label>
                 <div className="input-group">
                     <Form.Select
+                        data-tooltip-id="staff-role"
+                        data-tooltip-html="Select which roles this person an be assigned to.<br />Roles are assigned in a 'round-robin' style allocation<br />method to try and distribute it evenly across staff."
+                        data-tooltip-place="top"
                         className="form-select"
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                     >
+                        
                         <option value="">Select Role</option>
                         {rolesList && rolesList.length > 0 ? (
                             rolesList.map((roleItem: any, index: any) => (
@@ -135,7 +144,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                             </option>
                         )}
                     </Form.Select>
-
+                    <Tooltip id="staff-role" />
                     <Button
                         type="button"
                         className="btn btn-primary"
@@ -175,16 +184,23 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 <Form.Label className="form-label">Unavailable Days</Form.Label>
                 <InputGroup className="mb-3">
                     <Form.Control
+                     data-tooltip-id="staff-unav"
+                     data-tooltip-html="Select a specifc day the staff member<br />is unavailable to be assigned to a shift."
+                     data-tooltip-place="top"
                         type="date"
                         className="form-control"
                         value={unavDay}
                         onChange={(e) => setUnavDay(e.target.value)}
                     />
+                    <Tooltip id="staff-unav" />
                     <InputGroup.Text>
                         <strong>OR</strong>
                     </InputGroup.Text>
                     <Form.Select
                         className="form-control"
+                        data-tooltip-id="staff-unav2"
+                        data-tooltip-html="Select any recurring days the staff member<br />is unavailable to be assigned to a shift."
+                        data-tooltip-place="top"
                         value={unavDay}
                         onChange={(e) => setUnavDay(e.target.value)}
                     >
@@ -221,11 +237,15 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         </option>
                         <option value="Odd_Friday">Fortnightly Friday (odd weeks)</option>
                     </Form.Select>
+                    <Tooltip id="staff-unav2" />
                     <InputGroup.Text>
                         <strong>AND</strong>
                     </InputGroup.Text>
                     <Form.Select
                         className="form-control"
+                        data-tooltip-id="staff-unav3"
+                        data-tooltip-html="Is the person unavailable the whole day,<br />or only morning, or only afternoon."
+                        data-tooltip-place="top"
                         value={dayType}
                         onChange={(e) => setDayType(e.target.value)}
                     >
@@ -233,6 +253,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         <option value="AM">Unavailable AM</option>
                         <option value="PM">Unavailable PM</option>
                     </Form.Select>
+                    <Tooltip id="staff-unav3" />
                     <Button
                         type="button"
                         className="btn btn-primary"
@@ -266,16 +287,23 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 <Form.Label className="form-label">WFH Days</Form.Label>
                 <div className="input-group">
                     <Form.Control
+                        data-tooltip-id="staff-wfh"
+                        data-tooltip-html="Select a day the staff is working from home."
+                        data-tooltip-place="top"
                         type="date"
                         className="form-control"
                         value={wfhDay}
                         onChange={(e) => setWfhDay(e.target.value)}
                     />
+                    <Tooltip id="staff-wfh" />
                     <InputGroup.Text>
                         <strong>OR</strong>
                     </InputGroup.Text>
                     <Form.Select
                         className="form-control"
+                        data-tooltip-id="staff-wfh2"
+                        data-tooltip-html="Select a recurring day the<br />staff is working from home."
+                        data-tooltip-place="top"
                         value={wfhDay}
                         onChange={(e) => setWfhDay(e.target.value)}
                     >
@@ -312,6 +340,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         </option>
                         <option value="Odd_Friday">Fortnightly Friday (odd weeks)</option>
                     </Form.Select>
+                    <Tooltip id="staff-wfh2" />
                     <Button
                         type="button"
                         className="btn btn-primary"
@@ -344,12 +373,16 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                     <Form.Label className="form-label">Weighting % - smaller value will de-prioritise this person from being assigned a role.</Form.Label>
                     <Form.Control
                         value={weight}
+                        data-tooltip-id="staff-weight"
+                        data-tooltip-html="A way to prioritise the liklihood someone is assigned a shift.<br />A smaller value will de-prioritise this person from<br />being assigned a role. If unsure, leave this at 100%"
+                        data-tooltip-place="top"
                         type="number"
                         min="10"
                         max="100"
                         step="10"
                         onChange={(e) => setWeight(e.target.value)}/>
                     </ListGroup>
+                    <Tooltip id="staff-weight" />
                 </div>
             </div>
             <Button type="submit" className="btn btn-primary">
