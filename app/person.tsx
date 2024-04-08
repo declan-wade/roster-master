@@ -124,7 +124,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 <div className="input-group">
                     <Form.Select
                         data-tooltip-id="staff-role"
-                        data-tooltip-html="Select which roles this person an be assigned to.<br />Roles are assigned in a 'round-robin' style allocation<br />method to try and distribute it evenly across staff."
+                        data-tooltip-html="Select which roles this person can be assigned to.<br />Roles are assigned in a 'round-robin' style allocation<br />method to try and distribute it evenly across staff."
                         data-tooltip-place="top"
                         className="form-select"
                         value={role}
