@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 
 export const saveObjectToCookie = (data, cookie_name) => {
-  Cookies.set(cookie_name, JSON.stringify(data), { expires: 180 }); // Cookie expires in 7 days
+  Cookies.set(cookie_name, JSON.stringify(data), { expires: 365 }); // Cookie expires in 7 days
 };
 
 export const getObjectFromCookie = (cookie_name) => {
