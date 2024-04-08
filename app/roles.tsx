@@ -83,7 +83,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
           <Form.Check
             type="switch"
             data-tooltip-id="wfh-switch"
-            data-tooltip-html="Whether a staff member can be assigned this role when working from home.<br /> To be used in conjunction with the 'wroking-from-home availability."
+            data-tooltip-html="Whether a staff member can be assigned this role when working from home.<br /> To be used in conjunction with the 'wroking-from-home'<br />availability when adding a person."
             data-tooltip-place="top"
             checked={isWfh}
             onChange={() => setIsWfh(!isWfh)}
@@ -96,7 +96,7 @@ const RolesForm: React.FC<RolesFormProps> = ({ updateRoleList }) => {
         <div>
           <Form.Check
             data-tooltip-id="allday-switch"
-            data-tooltip-html="Whether this role has morning and afternoon<br />shifts (default), or is only for a full-day."
+            data-tooltip-html="Whether this role has morning and afternoon<br />shifts (default), or can only for a full-day shift."
             data-tooltip-place="top"
             type="switch"
             checked={isAllDay}
