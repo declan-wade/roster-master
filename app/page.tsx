@@ -17,7 +17,7 @@ import PopoverForm from "./offcanvas";
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Nav from "react-bootstrap/Nav";
-import UploadJsonButton from './UploadJsonButton'; 
+import UploadJsonButton from './UploadJsonButton';
 import Modal from 'react-bootstrap/Modal';
 import {
   saveObjectToCookie,
@@ -119,13 +119,13 @@ export default function Page() {
 
     // Retrieve the object from the specified cookie
     const objectFromCookie = getObjectFromCookie(cookieName);
-  
+
     if (!objectFromCookie) {
       console.error(`No valid data found in the cookie: ${cookieName}`);
       toggleToast(`No valid data found in the cookie: ${cookieName}`)
       return;
     }
-  
+
     const jsonString = JSON.stringify(objectFromCookie, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const link = document.createElement('a');
@@ -159,7 +159,7 @@ export default function Page() {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({"staffData": payload, "rolesData": roleList} ),
+            body: JSON.stringify({ "staffData": payload, "rolesData": roleList }),
           }
         );
 
@@ -208,7 +208,7 @@ export default function Page() {
   }, [payload]);
 
   React.useEffect(() => {
-      saveObjectToCookie({"doubleShiftFlag": doubleShiftFlag}, "settings-cookie");
+    saveObjectToCookie({ "doubleShiftFlag": doubleShiftFlag }, "settings-cookie");
   }, [doubleShiftFlag]);
 
   React.useEffect(() => {
@@ -243,13 +243,13 @@ export default function Page() {
               <NavDropdown.Item onClick={handleClearStorage}>
                 📦 Clear Local Storage
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={()=>downloadJSONFromCookie('staff-cookie', 'staffData')}>
+              <NavDropdown.Item onClick={() => downloadJSONFromCookie('staff-cookie', 'staffData')}>
                 ⬇️ Download Staff Data
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={()=>downloadJSONFromCookie('roles-cookie', 'rolesData')}>
+              <NavDropdown.Item onClick={() => downloadJSONFromCookie('roles-cookie', 'rolesData')}>
                 ⬇️ Download Roles Data
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={()=>setShowUpload(true)}>
+              <NavDropdown.Item onClick={() => setShowUpload(true)}>
                 ⤴️ Upload Data
               </NavDropdown.Item>
             </NavDropdown>
@@ -257,33 +257,33 @@ export default function Page() {
         </Container>
       </Navbar>
       <ToastContainer
-          className="p-3"
-          position="top-end"
-          style={{ zIndex: 1000, position: 'fixed' }}
+        className="p-3"
+        position="top-end"
+        style={{ zIndex: 1000, position: 'fixed' }}
 
       >
-      <Toast show={showToast} onClose={() => toggleToast("")} autohide={true} delay={3000} bg="success" >
-        <Toast.Header>
-          <strong className="me-auto">{toastMsg}</strong>
-        </Toast.Header>
-        <Toast.Body>
+        <Toast show={showToast} onClose={() => toggleToast("")} autohide={true} delay={3000} bg="success" >
+          <Toast.Header>
+            <strong className="me-auto">{toastMsg}</strong>
+          </Toast.Header>
+          <Toast.Body>
 
           </Toast.Body>
         </Toast>
-        </ToastContainer>
-        <Modal show={showUpload} onHide={handleCloseUpload}>
+      </ToastContainer>
+      <Modal show={showUpload} onHide={handleCloseUpload}>
         <Modal.Header closeButton>
           <Modal.Title>Upload Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card bg='danger' text='white'> <Card.Text>‎ This action will overwrite any existing data!</Card.Text></Card>
           <br></br>
-        <Form.Select onChange={(e) => setUploadData(e.target.value)}>
-          <option>Select data type...</option>
-          <option value="staff-cookie">Staff</option>
-          <option value="roles-cookie">Roles</option>
-        </Form.Select>
-        <br></br>
+          <Form.Select onChange={(e) => setUploadData(e.target.value)}>
+            <option>Select data type...</option>
+            <option value="staff-cookie">Staff</option>
+            <option value="roles-cookie">Roles</option>
+          </Form.Select>
+          <br></br>
           <UploadJsonButton onUpload={handleJsonUpload} disabled={uploadData == ''}></UploadJsonButton>
         </Modal.Body>
         <Modal.Footer>
@@ -292,7 +292,7 @@ export default function Page() {
           </Button>
         </Modal.Footer>
       </Modal>
-        <div className="container mt-5">
+      <div className="container mt-5">
         <h4>Add Staff Member</h4>
         <PersonForm onSubmit={handleSubmit} rolesList={roleList} />
         <br></br>
@@ -345,12 +345,12 @@ export default function Page() {
         </Container>
 
         <br></br>
-        <Button 
-        variant="warning" 
-        data-tooltip-id="gen-btn"
-        data-tooltip-content="Generate the roster in a new tab."
-        data-tooltip-place="top"
-        onClick={handleGenerate}>
+        <Button
+          variant="warning"
+          data-tooltip-id="gen-btn"
+          data-tooltip-content="Generate the roster in a new tab."
+          data-tooltip-place="top"
+          onClick={handleGenerate}>
           Generate Roster
         </Button>
         <Tooltip id="gen-btn" />
@@ -360,9 +360,9 @@ export default function Page() {
         <Accordion>
           <Accordion.Item eventKey="0">
             <Accordion.Header
-            data-tooltip-id="acc-staff"
-            data-tooltip-html="This is where you can manage and edit the staff you have created."
-            data-tooltip-place="top"
+              data-tooltip-id="acc-staff"
+              data-tooltip-html="This is where you can manage and edit the staff you have created."
+              data-tooltip-place="top"
             >
               <h5>Staff List</h5>‎ ‎ ‎ ‎{" "}
               <Badge>{payload ? payload.length : 0}</Badge>
@@ -417,12 +417,11 @@ export default function Page() {
                                   pill
                                   bg="info"
                                   className="me-1"
-                                >{`${u.unavDay}${
-                                  u.dayType ? ` - ${u.dayType}` : ""
-                                }`}</Badge> // Adding margin for spacing
+                                >{`${u.unavDay}${u.dayType ? ` - ${u.dayType}` : ""
+                                  }`}</Badge> // Adding margin for spacing
                               )
                             )}
-                            {item.leaveDays.map(
+                            {item.leaveDays ? item.leaveDays.map(
                               (u: any, index: number) => (
                                 <Badge
                                   key={index}
@@ -431,22 +430,22 @@ export default function Page() {
                                   className="me-1"
                                 >{`${DateTime.fromISO(u.startDate).toFormat('dd LLLL yy')} -> ${DateTime.fromISO(u.endDate).toFormat('dd LLLL yy')}`}</Badge> // Adding margin for spacing
                               )
-                            )}
+                            ) : null}
                           </td>
                           <td>{item.wfhDays?.map(
-                                  (u: any, index: number) => (
-                                      <Badge
-                                          key={index}
-                                          pill
-                                          bg="secondary"
-                                          className="me-1"
-                                      >{u}</Badge> // Adding margin for spacing
-                                  )
-                              )
-                              ?? "N/A"}</td>
+                            (u: any, index: number) => (
+                              <Badge
+                                key={index}
+                                pill
+                                bg="secondary"
+                                className="me-1"
+                              >{u}</Badge> // Adding margin for spacing
+                            )
+                          )
+                            ?? "N/A"}</td>
                           {" "}
-                          <td>{item.weight? `${item.weight}` : "N/A"}
-                          {" "}
+                          <td>{item.weight ? `${item.weight}` : "N/A"}
+                            {" "}
                           </td>
                           <td className="align-middle">
                             <ButtonGroup>
@@ -484,9 +483,9 @@ export default function Page() {
           </Accordion.Item>
           <Accordion.Item eventKey="1">
             <Accordion.Header
-             data-tooltip-id="acc-roles"
-             data-tooltip-html="This is where you can define the different roles a person can be assigned to."
-             data-tooltip-place="top"
+              data-tooltip-id="acc-roles"
+              data-tooltip-html="This is where you can define the different roles a person can be assigned to."
+              data-tooltip-place="top"
             >
               <h5>Role Manager</h5>‎ ‎ ‎ ‎{" "}
               <Badge>{roleList ? roleList.length : 0}</Badge>
@@ -501,34 +500,34 @@ export default function Page() {
               data-tooltip-id="acc-setting"
               data-tooltip-html="Manage advanced options and settings."
               data-tooltip-place="top"
-              >
+            >
               <h5>Settings</h5>
             </Accordion.Header>
             <Tooltip id="acc-setting" />
             <Accordion.Body>
               <div className="mb-3">
-                <Form.Label 
-                className="form-label">Prevent staff from being assigned more than one shift per day.</Form.Label>
+                <Form.Label
+                  className="form-label">Prevent staff from being assigned more than one shift per day.</Form.Label>
                 <div>
                   <Form.Check
-                      type="switch"
-                      checked={doubleShiftFlag}
-                      onChange={() => setDoubleShiftFlag(!doubleShiftFlag)}
+                    type="switch"
+                    checked={doubleShiftFlag}
+                    onChange={() => setDoubleShiftFlag(!doubleShiftFlag)}
                   />
                 </div>
               </div>
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-          <br></br>
-          <hr></hr>
-          <br></br>
-          <PopoverForm
-              payload={editPerson}
-              show={showOffcanvas}
-              setShow={overrideShow}
-              onUpdate={onUpdate}
-              roleList={roleList}
+        <br></br>
+        <hr></hr>
+        <br></br>
+        <PopoverForm
+          payload={editPerson}
+          show={showOffcanvas}
+          setShow={overrideShow}
+          onUpdate={onUpdate}
+          roleList={roleList}
         ></PopoverForm>
         <br></br>
         <br></br>
@@ -539,7 +538,7 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v0.12 - Licensed under MIT - Made in Perth, Western
+            RosterMaster - v1.0 - Licensed under MIT - Made in Perth, Western
             Australia - Code available{" "}
             <a href="https://github.com/declan-wade/roster-master">here</a>
           </span>

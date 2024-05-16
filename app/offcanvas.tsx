@@ -413,7 +413,7 @@ const PopoverForm: React.FC<Props> = ({
                                     </Button>
                                 </div>
                                 <ListGroup className="list-group mt-2">
-                                    {leaveDays.map((u: any, index: any) => (
+                                    {leaveDays ? leaveDays.map((u: any, index: any) => (
                                         <ListGroup.Item
                                             variant="info"
                                             key={index}
@@ -428,7 +428,7 @@ const PopoverForm: React.FC<Props> = ({
                                                 Delete
                                             </Button>
                                         </ListGroup.Item>
-                                    ))}
+                                    )) : null}
                                 </ListGroup>
                             </div>
                             <hr></hr>
