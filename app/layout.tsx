@@ -3,8 +3,8 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
-  title: "Roster Master",
-  description: "Roster Master - Main",
+  title: "RosterMaster",
+  description: "Create simple rosters for your staff!",
 };
 
 export default function RootLayout({
