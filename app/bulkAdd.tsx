@@ -33,6 +33,7 @@ const BulkAdd: React.FC<Props> = ({existingArray, onArrayUpdate, closeModal}) =>
             roles: [],
             unavailabilities: [],
             wfhDays: [],
+            leaveDays: [],
             weight: 100,
         }));
 
