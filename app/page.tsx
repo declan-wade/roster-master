@@ -35,16 +35,8 @@ import BulkAdd from "@/app/bulkAdd";
 import { DateTime } from 'luxon';
 
 export default function Page() {
-  interface Person {
-    name: string;
-    roles: [];
-    unavailabilities: string[];
-    wfhDays: [];
-    leaveDays: [];
-    weight: number
-  }
 
-  const [payload, setPayload] = useState<Person[]>([]);
+  const [payload, setPayload] = useState<any[]>([]);
   const [roster, setRoster] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [numWeeks, setNumWeeks] = useState("1");

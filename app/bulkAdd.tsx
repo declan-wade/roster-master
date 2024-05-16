@@ -7,6 +7,7 @@ interface Person {
     roles: [];
     unavailabilities: string[];
     wfhDays: [];
+    leaveDays: [];
     weight: number
 }
 
