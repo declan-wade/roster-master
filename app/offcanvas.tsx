@@ -87,15 +87,16 @@ const PopoverForm: React.FC<Props> = ({
         setWfhDay("");
     };
 
-    const handleLeaveAdd = () => {
-        if (leaveStart.trim() !== "" && leaveEnd.trim() !== "") {
-            const newLeave = { startDate: leaveStart.trim(), endDate: leaveEnd.trim() };
-            console.log({ newLeave })
-            setLeaveDays([...leaveDays, newLeave]);
-            setLeaveEnd("");
-            setLeaveStart("");
-        }
-    };
+ const handleLeaveAdd = () => {
+    if (leaveStart.trim() !== "" && leaveEnd.trim() !== "") {
+        const newLeave = { startDate: leaveStart.trim(), endDate: leaveEnd.trim() };
+        console.log({ newLeave });
+        const updatedLeaveDays = leaveDays ? [...leaveDays, newLeave] : [newLeave];
+        setLeaveDays(updatedLeaveDays);
+        setLeaveEnd("");
+        setLeaveStart("");
+    }
+};
 
     const handlLeaveDelete = (index: number) => {
         const updatedDates = [...leaveDays];

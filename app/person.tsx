@@ -305,7 +305,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
             </div>
             <div className="mb-3">
                 <Form.Label className="form-label">WFH Days</Form.Label>
-                <div className="input-group">
+                <InputGroup className="mb-3">
                     <Form.Control
                         data-tooltip-id="staff-wfh"
                         data-tooltip-html="Select a day the staff is working from home."
@@ -369,6 +369,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                     >
                         Add WFH Day
                     </Button>
+                    </InputGroup>
                     <ListGroup className="list-group mt-2">
                     { (wfhDays || []).map((u, index) => (
                         <ListGroup.Item
@@ -387,7 +388,6 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
-                </div>
                 </div>
                 <div className="mb-3">
                 <Form.Label className="form-label">Extended Leave</Form.Label>
