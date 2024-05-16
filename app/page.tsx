@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Accordion from "react-bootstrap/Accordion";
 import Alert from "react-bootstrap/Alert";
@@ -16,6 +17,7 @@ import PopoverForm from "./offcanvas";
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Nav from "react-bootstrap/Nav";
+import UploadJsonButton from './UploadJsonButton'; 
 import Modal from 'react-bootstrap/Modal';
 import {
   saveObjectToCookie,
@@ -30,6 +32,7 @@ import RolesForm from "./roles";
 import { ButtonGroup } from "react-bootstrap";
 import Toast from 'react-bootstrap/Toast';
 import BulkAdd from "@/app/bulkAdd";
+import { DateTime } from 'luxon';
 
 export default function Page() {
   interface Person {
@@ -37,6 +40,7 @@ export default function Page() {
     roles: [];
     unavailabilities: string[];
     wfhDays: [];
+    leaveDays: [];
     weight: number
   }
 
@@ -52,6 +56,10 @@ export default function Page() {
   const [toastMsg, setToastMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [doubleShiftFlag, setDoubleShiftFlag] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploadData, setUploadData] = useState("")
+  const handleCloseUpload = () => setShowUpload(false);
+  const handleShowUpload = () => setShowUpload(true);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -59,6 +67,14 @@ export default function Page() {
   const toggleToast = (msg: string) => {
     setToastMsg(msg)
     setShowToast(!showToast);
+  }
+
+  function handleJsonUpload(jsonData: any) {
+    saveObjectToCookie(jsonData, uploadData);
+    setShowUpload(false);
+    getObjectFromCookie(uploadData);
+    setUploadData('')
+    window.location.reload();
   }
 
   const handleSubmit = (person: any) => {
@@ -105,6 +121,28 @@ export default function Page() {
   const handleClearStorage = () => {
     clearStorage("roster-cookie")
     toggleToast("Cleared storage successfully!");
+  }
+
+  function downloadJSONFromCookie(cookieName: any, fileName: any) {
+
+    // Retrieve the object from the specified cookie
+    const objectFromCookie = getObjectFromCookie(cookieName);
+  
+    if (!objectFromCookie) {
+      console.error(`No valid data found in the cookie: ${cookieName}`);
+      toggleToast(`No valid data found in the cookie: ${cookieName}`)
+      return;
+    }
+  
+    const jsonString = JSON.stringify(objectFromCookie, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const link = document.createElement('a');
+
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   const getNextMonday = () => {
@@ -213,6 +251,15 @@ export default function Page() {
               <NavDropdown.Item onClick={handleClearStorage}>
                 📦 Clear Local Storage
               </NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>downloadJSONFromCookie('staff-cookie', 'staffData')}>
+                ⬇️ Download Staff Data
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>downloadJSONFromCookie('roles-cookie', 'rolesData')}>
+                ⬇️ Download Roles Data
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>setShowUpload(true)}>
+                ⤴️ Upload Data
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Container>
@@ -232,6 +279,27 @@ export default function Page() {
           </Toast.Body>
         </Toast>
         </ToastContainer>
+        <Modal show={showUpload} onHide={handleCloseUpload}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Card bg='danger' text='white'> <Card.Text>‎ This action will overwrite any existing data!</Card.Text></Card>
+          <br></br>
+        <Form.Select onChange={(e) => setUploadData(e.target.value)}>
+          <option>Select data type...</option>
+          <option value="staff-cookie">Staff</option>
+          <option value="roles-cookie">Roles</option>
+        </Form.Select>
+        <br></br>
+          <UploadJsonButton onUpload={handleJsonUpload} disabled={uploadData == ''}></UploadJsonButton>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseUpload}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
         <div className="container mt-5">
         <h4>Add Staff Member</h4>
         <PersonForm onSubmit={handleSubmit} rolesList={roleList} />
@@ -325,7 +393,7 @@ export default function Page() {
                   <tr>
                     <th>Name</th>
                     <th>Position / Role</th>
-                    <th>Dates Unavailable</th>
+                    <th>RDO and Unavailable Dates</th>
                     <th>Dates WFH</th>
                     <th>Weighting</th>
                     <th>Actions</th>
@@ -360,6 +428,16 @@ export default function Page() {
                                 >{`${u.unavDay}${
                                   u.dayType ? ` - ${u.dayType}` : ""
                                 }`}</Badge> // Adding margin for spacing
+                              )
+                            )}
+                            {item.leaveDays.map(
+                              (u: any, index: number) => (
+                                <Badge
+                                  key={index}
+                                  pill
+                                  bg="info"
+                                  className="me-1"
+                                >{`${DateTime.fromISO(u.startDate).toFormat('dd LLLL yy')} -> ${DateTime.fromISO(u.endDate).toFormat('dd LLLL yy')}`}</Badge> // Adding margin for spacing
                               )
                             )}
                           </td>

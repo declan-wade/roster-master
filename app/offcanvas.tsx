@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {Alert, Button, Form, InputGroup, ListGroup, Offcanvas} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Form, InputGroup, ListGroup, Offcanvas } from "react-bootstrap";
+import { DateTime } from 'luxon';
 
 interface Props {
     payload: any;
@@ -17,12 +18,12 @@ type Role = [];
 type Roles = Role[];
 
 const PopoverForm: React.FC<Props> = ({
-                                          payload,
-                                          show,
-                                          setShow,
-                                          onUpdate,
-                                          roleList,
-                                      }) => {
+    payload,
+    show,
+    setShow,
+    onUpdate,
+    roleList,
+}) => {
     const [name, setName] = useState(payload.name);
     const [role, setRole] = useState("");
     const [unavailability, setUnavailability] = useState<any>("");
@@ -36,12 +37,15 @@ const PopoverForm: React.FC<Props> = ({
     const [wfhDays, setWfhDays] = useState<wfhDays>([]);
     const [wfhDay, setWfhDay] = useState<wfhDay>("");
     const [weight, setWeight] = useState<any>(100)
+    const [leaveStart, setLeaveStart] = useState("");
+    const [leaveEnd, setLeaveEnd] = useState("");
+    const [leaveDays, setLeaveDays] = useState<any>([]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (name.length > 1) {
             if (roles.length > 0) {
-                const person = {name, roles, unavailabilities, wfhDays, weight};
+                const person = { name, roles, unavailabilities, wfhDays, leaveDays, weight };
                 onUpdate(person);
                 // Clear form fields
                 handleClose();
@@ -65,6 +69,7 @@ const PopoverForm: React.FC<Props> = ({
         setUnavailabilities(payload.unavailabilities);
         setWfhDays(payload.wfhDays);
         setWeight(payload.weight);
+        setLeaveDays(payload.leaveDays);
     }, [payload]);
 
     const handleRoleAdd = () => {
@@ -82,16 +87,32 @@ const PopoverForm: React.FC<Props> = ({
         setWfhDay("");
     };
 
+    const handleLeaveAdd = () => {
+        if (leaveStart.trim() !== "" && leaveEnd.trim() !== "") {
+            const newLeave = { startDate: leaveStart.trim(), endDate: leaveEnd.trim() };
+            console.log({ newLeave })
+            setLeaveDays([...leaveDays, newLeave]);
+            setLeaveEnd("");
+            setLeaveStart("");
+        }
+    };
+
+    const handlLeaveDelete = (index: number) => {
+        const updatedDates = [...leaveDays];
+        updatedDates.splice(index, 1);
+        setLeaveDays(updatedDates);
+    };
+
     const handleUnavailabilityAdd = () => {
         if (unavDay.trim() !== "") {
-            const newUnav = {unavDay: unavDay.trim(), dayType: dayType}; // Create new unavailability object
+            const newUnav = { unavDay: unavDay.trim(), dayType: dayType }; // Create new unavailability object
             setUnavailabilities([...unavailabilities, newUnav]); // Add new role object to unavailabilities array
             setRole("");
             setUnavDay("");
             setDayType("All-Day")
             setUnavailability([]);
-            console.log({unavailability});
-            console.log({unavailabilities});
+            console.log({ unavailability });
+            console.log({ unavailabilities });
         }
     };
 
@@ -193,7 +214,7 @@ const PopoverForm: React.FC<Props> = ({
                         <br></br>
                         <hr></hr>
                         <br></br>
-                        <Form.Label className="form-label">Unavailable Days</Form.Label>
+                        <Form.Label className="form-label">Rostered-Off Days</Form.Label>
                         <InputGroup className="mb-3">
                             <Form.Control
                                 type="date"
@@ -350,8 +371,6 @@ const PopoverForm: React.FC<Props> = ({
                             >
                                 Add WFH Day
                             </Button>
-
-
                             <ListGroup className="list-group mt-2">
                                 {wfhDays.map((u, index) => (
                                     <ListGroup.Item
@@ -370,6 +389,48 @@ const PopoverForm: React.FC<Props> = ({
                                     </ListGroup.Item>
                                 ))}
                             </ListGroup>
+                            <br></br>
+                            <hr></hr>
+                            <br></br>
+                            <div className="mb-3">
+                                <Form.Label className="form-label">Extended Leave</Form.Label>
+                                <div className="input-group">
+                                    <Form.Control
+                                        value={leaveStart}
+                                        type="date"
+                                        onChange={(e) => setLeaveStart(e.target.value)} />
+                                    <Form.Control
+                                        value={leaveEnd}
+                                        type="date"
+                                        onChange={(e) => setLeaveEnd(e.target.value)} />
+                                    <Button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={handleLeaveAdd}
+                                        disabled={leaveStart.trim() == "" && leaveEnd.trim() == ""}
+                                    >
+                                        Add Leave
+                                    </Button>
+                                </div>
+                                <ListGroup className="list-group mt-2">
+                                    {leaveDays.map((u: any, index: any) => (
+                                        <ListGroup.Item
+                                            variant="info"
+                                            key={index}
+                                            className="list-group-item d-flex justify-content-between align-items-center"
+                                        >
+                                            {`${DateTime.fromISO(u.startDate).toFormat('dd LLLL yyyy')} until ${DateTime.fromISO(u.endDate).toFormat('dd LLLL yyyy')}`}
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                onClick={() => handlLeaveDelete(index)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </ListGroup.Item>
+                                    ))}
+                                </ListGroup>
+                            </div>
                             <hr></hr>
                             <div className="mb-3">
                                 <ListGroup className="list-group mt-2">
@@ -381,7 +442,7 @@ const PopoverForm: React.FC<Props> = ({
                                         min="10"
                                         max="100"
                                         step="10"
-                                        onChange={(e) => setWeight(e.target.value)}/>
+                                        onChange={(e) => setWeight(e.target.value)} />
                                 </ListGroup>
                             </div>
                         </div>

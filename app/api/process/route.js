@@ -18,6 +18,7 @@ export async function POST(req, res) {
   function isAvailable(person, date, roleToCheck, week) {
     const unavailabilities = person.unavailabilities || [];
     const wfhDays = person.wfhDays || []; // Handle potential empty array
+    const leaveDays = person.leaveDays || []; // Handle potential empty array
     const currentDate = DateTime.fromISO(date);
 
     // Check unavailability by date and day type
@@ -25,6 +26,15 @@ export async function POST(req, res) {
       // Prioritize 'All-Day' unavailabilities for any date
       if (range.dayType === "All-Day") {
         if (isDateUnavailable(currentDate, range.unavDay, week)) return false;
+      }
+    }
+
+    // Check if date is within leaveDays
+    for (const leave of leaveDays) {
+      const leaveStart = DateTime.fromISO(leave.startDate);
+      const leaveEnd = DateTime.fromISO(leave.endDate);
+      if (currentDate >= leaveStart && currentDate <= leaveEnd) {
+        return false;
       }
     }
 

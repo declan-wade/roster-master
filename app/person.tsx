@@ -1,7 +1,7 @@
 "use client";
 
-// components/PersonForm.js
-import React, {useState} from "react";
+import { DateTime } from 'luxon';
+import React, {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
@@ -27,12 +27,15 @@ export default function PersonForm({onSubmit, rolesList}: any) {
     const [dayType, setDayType] = useState<DayType>("All-Day");
     const [weight, setWeight] = useState<any>(100);
     const [unavDay, setUnavDay] = useState<UnavDay>("");
+    const [leaveStart, setLeaveStart] = useState("");
+    const [leaveEnd, setLeaveEnd] = useState("");
+    const [leaveDays, setLeaveDays] = useState<any>([]);
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
         if (name.length > 1) {
             if (roles.length > 0) {
-                const person = {name, roles, unavailabilities, wfhDays, weight};
+                const person = {name, roles, unavailabilities, wfhDays, leaveDays, weight};
                 onSubmit(person);
                 // Clear form fields
                 setName("");
@@ -44,6 +47,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 setWfhDay("");
                 setRoles([]);
                 setUnavailabilities([]);
+                setLeaveDays([]);
                 setWfhDays([]);
                 setFormValid(true);
                 setNameValid(true);
@@ -74,6 +78,16 @@ export default function PersonForm({onSubmit, rolesList}: any) {
         }
     };
 
+    const handleLeaveAdd = () => {
+        if (leaveStart.trim() !== "" && leaveEnd.trim() !== "") {
+            const newLeave = { startDate: leaveStart.trim(), endDate: leaveEnd.trim() };
+            console.log({newLeave})
+            setLeaveDays([...leaveDays, newLeave]);
+            setLeaveEnd("");
+            setLeaveStart("");
+        }
+    };
+
     const handleWfhAdd = () => {
         setWfhDays([...wfhDays, wfhDay]);
         setWfhDay("");
@@ -95,6 +109,12 @@ export default function PersonForm({onSubmit, rolesList}: any) {
         const updatedDates = [...wfhDays];
         updatedDates.splice(index, 1);
         setWfhDays(updatedDates);
+    };
+
+    const handlLeaveDelete = (index: number) => {
+        const updatedDates = [...leaveDays];
+        updatedDates.splice(index, 1);
+        setLeaveDays(updatedDates);
     };
 
     return (
@@ -181,7 +201,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                 )}
             </div>
             <div className="mb-3">
-                <Form.Label className="form-label">Unavailable Days</Form.Label>
+                <Form.Label className="form-label">Rostered-Off Days</Form.Label>
                 <InputGroup className="mb-3">
                     <Form.Control
                      data-tooltip-id="staff-unav"
@@ -349,8 +369,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                     >
                         Add WFH Day
                     </Button>
-                </div>
-                <ListGroup className="list-group mt-2">
+                    <ListGroup className="list-group mt-2">
                     { (wfhDays || []).map((u, index) => (
                         <ListGroup.Item
                             variant="info"
@@ -368,6 +387,55 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
+                </div>
+                </div>
+                <div className="mb-3">
+                <Form.Label className="form-label">Extended Leave</Form.Label>
+                <div className="input-group">
+                    <Form.Control
+                        value={leaveStart}
+                        data-tooltip-id="start-date"
+                        data-tooltip-html="The first day of leave"
+                        data-tooltip-place="top"
+                        type="date"
+                        onChange={(e) => setLeaveStart(e.target.value)}/>
+                        <Tooltip id="start-date" />
+                    <Form.Control
+                        value={leaveEnd}
+                        data-tooltip-id="end-date"
+                        data-tooltip-html="The last day of leave"
+                        data-tooltip-place="top"
+                        type="date"
+                        onChange={(e) => setLeaveEnd(e.target.value)}/>
+                        <Tooltip id="end-date" />
+                    <Button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleLeaveAdd}
+                    disabled={leaveStart.trim() == "" && leaveEnd.trim() == ""}
+                >
+                    Add Leave
+                    </Button>
+                    </div>
+                    <ListGroup className="list-group mt-2">
+                    {leaveDays.map((u: any, index: any) => (
+                        <ListGroup.Item
+                            variant="info"
+                            key={index}
+                            className="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            {`${DateTime.fromISO(u.startDate).toFormat('dd LLLL yyyy')} until ${DateTime.fromISO(u.endDate).toFormat('dd LLLL yyyy')}`}
+                            <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => handlLeaveDelete(index)}
+                            >
+                                Delete
+                            </Button>
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
+                    </div>
                 <div className="mb-3">
                     <ListGroup className="list-group mt-2">
                     <Form.Label className="form-label">Weighting % - smaller value will de-prioritise this person from being assigned a role.</Form.Label>
@@ -384,7 +452,7 @@ export default function PersonForm({onSubmit, rolesList}: any) {
                     </ListGroup>
                     <Tooltip id="staff-weight" />
                 </div>
-            </div>
+            
             <Button type="submit" className="btn btn-primary">
                 Add Person to Roster
             </Button>
