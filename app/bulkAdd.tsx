@@ -7,6 +7,7 @@ interface Person {
     roles: [];
     unavailabilities: string[];
     wfhDays: [];
+    leaveDays: [];
     weight: number
 }
 
@@ -32,6 +33,7 @@ const BulkAdd: React.FC<Props> = ({existingArray, onArrayUpdate, closeModal}) =>
             roles: [],
             unavailabilities: [],
             wfhDays: [],
+            leaveDays: [],
             weight: 100,
         }));
 
