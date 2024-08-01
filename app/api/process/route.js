@@ -10,6 +10,7 @@ export async function POST(req, res) {
   const doubleShiftFlag = await searchParams.get("doubleShiftFlag");
   const numberOfWeeks = await searchParams.get("numWeeks");
   const startDate = DateTime.fromISO(params);
+  const weeklyRosterFlag = await searchParams.get("weeklyRosterFlag"); // New flag
   const uniqueRoles = incoming.rolesData;
   console.log(startDate);
   console.log("unique roles: ", uniqueRoles);
@@ -181,106 +182,162 @@ export async function POST(req, res) {
       }
     }
   }
-
-  // Function to generate roster for a week
-  function generateRoster(
-    startDate,
-    rosterData,
-    numberOfWeeks,
-    doubleShiftFlag
-  ) {
-    return new Promise((resolve) => {
-      const roster = {};
-      const shiftsAssigned = new Map(); // Initialize shiftsAssigned map
-      rosterData.forEach((person) => {
-        // Ensure weight is treated as an integer
-        person.weight = parseInt(person.weight, 10);
-      });
-
-      for (let week = 1; week < parseInt(numberOfWeeks, 10) + 1; week++) {
-        const currentWeekStartDate = startDate.plus({ weeks: week - 1 });
-        console.log("Processing week ", week);
-        for (let i = 0; i < 5; i++) {
-          const currentDate = currentWeekStartDate.plus({ days: i });
-          const formattedDate = currentDate.toFormat("EEEE dd LLLL yyyy");
-          roster[formattedDate] = {};
-
-          uniqueRoles.forEach((roleObj) => {
-            const role = roleObj.role; // Extracting role from the object
-
-            // Check if the role requires all-day shift
-            if (roleObj.isAllDay) {
-              // Initialize key for all-day shift if it doesn't exist
-              if (!roster[formattedDate][role]) {
-                roster[formattedDate][role] = [];
-              }
-
-              // Filter people available for the role for the whole day
-              const availablePeopleForRoleAllDay = rosterData.filter(
-                (person) =>
-                  person.roles.includes(role) &&
-                  isAvailable(person, currentDate, role, week) &&
-                  isAvailableHalfDay(person, currentDate, week, "AM") &&
-                  isAvailableHalfDay(person, currentDate, week, "PM")
-              );
-
-              // All-day shift assignment
-              if (availablePeopleForRoleAllDay.length > 0) {
-                const personForAllDayShift = availablePeopleForRoleAllDay.sort(
-                  (a, b) =>
-                    ((shiftsAssigned.get(a.name) || 0) + 1) / a.weight -
-                    ((shiftsAssigned.get(b.name) || 0) + 1) / b.weight
-                )[0];
-                roster[formattedDate][role].push(personForAllDayShift.name);
-                shiftsAssigned.set(
-                  personForAllDayShift.name,
-                  (shiftsAssigned.get(personForAllDayShift.name) || 0) + 1
+  
+    // Function to generate roster for a week (modified to handle weeklyRosterFlag)
+    function generateRoster(
+      startDate,
+      rosterData,
+      numberOfWeeks,
+      doubleShiftFlag,
+      weeklyRosterFlag
+    ) {
+      return new Promise((resolve) => {
+        const roster = {};
+        const shiftsAssigned = new Map(); // Initialize shiftsAssigned map
+        rosterData.forEach((person) => {
+          // Ensure weight is treated as an integer
+          person.weight = parseInt(person.weight, 10);
+        });
+  
+        for (let week = 1; week < parseInt(numberOfWeeks, 10) + 1; week++) {
+          const currentWeekStartDate = startDate.plus({ weeks: week - 1 });
+          console.log("Processing week ", week);
+  
+          if (weeklyRosterFlag === 'true') {
+            // Weekly granularity
+            const weekStartDate = currentWeekStartDate.toFormat("EEEE dd LLLL yyyy");
+            roster[weekStartDate] = {};
+  
+            uniqueRoles.forEach((roleObj) => {
+              const role = roleObj.role;
+  
+              if (roleObj.isAllDay) {
+                if (!roster[weekStartDate][role]) {
+                  roster[weekStartDate][role] = [];
+                }
+  
+                const availablePeopleForRoleAllDay = rosterData.filter(
+                  (person) =>
+                    person.roles.includes(role) &&
+                    isAvailable(person, currentWeekStartDate, role, week) &&
+                    isAvailableHalfDay(person, currentWeekStartDate, week, "AM") &&
+                    isAvailableHalfDay(person, currentWeekStartDate, week, "PM")
                 );
+  
+                if (availablePeopleForRoleAllDay.length > 0) {
+                  const personForAllDayShift = availablePeopleForRoleAllDay.sort(
+                    (a, b) =>
+                      ((shiftsAssigned.get(a.name) || 0) + 1) / a.weight -
+                      ((shiftsAssigned.get(b.name) || 0) + 1) / b.weight
+                  )[0];
+                  roster[weekStartDate][role].push(personForAllDayShift.name);
+                  shiftsAssigned.set(
+                    personForAllDayShift.name,
+                    (shiftsAssigned.get(personForAllDayShift.name) || 0) + 1
+                  );
+                }
+              } else {
+                if (!roster[weekStartDate][`morning_${role}`]) {
+                  roster[weekStartDate][`morning_${role}`] = [];
+                }
+                if (!roster[weekStartDate][`afternoon_${role}`]) {
+                  roster[weekStartDate][`afternoon_${role}`] = [];
+                }
+  
+                const availablePeopleForRoleAM = rosterData.filter(
+                  (person) =>
+                    person.roles.includes(role) &&
+                    isAvailable(person, currentWeekStartDate, role, week) &&
+                    isAvailableHalfDay(person, currentWeekStartDate, week, "AM")
+                );
+  
+                let availablePeopleForRolePM = rosterData.filter(
+                  (person) =>
+                    person.roles.includes(role) &&
+                    isAvailable(person, currentWeekStartDate, role, week) &&
+                    isAvailableHalfDay(person, currentWeekStartDate, week, "PM")
+                );
+  
+                assignShift(availablePeopleForRoleAM, 'morning', roster[weekStartDate], shiftsAssigned, role, doubleShiftFlag);
+                assignShift(availablePeopleForRolePM, 'afternoon', roster[weekStartDate], shiftsAssigned, role, doubleShiftFlag);
               }
-            } else {
-              // For roles without all-day requirement, proceed as before
-              if (!roster[formattedDate][`morning_${role}`]) {
-                roster[formattedDate][`morning_${role}`] = [];
-              }
-              if (!roster[formattedDate][`afternoon_${role}`]) {
-                roster[formattedDate][`afternoon_${role}`] = [];
-              }
-
-              // Filter people available for the role considering WFH compatibility
-              const availablePeopleForRoleAM = rosterData.filter(
-                (person) =>
-                  person.roles.includes(role) &&
-                  isAvailable(person, currentDate, role, week) &&
-                  isAvailableHalfDay(person, currentDate, week, "AM")
-              );
-              //console.log(availablePeopleForRoleAM);
-              let availablePeopleForRolePM = rosterData.filter(
-                (person) =>
-                  person.roles.includes(role) &&
-                  isAvailable(person, currentDate, role, week) &&
-                  isAvailableHalfDay(person, currentDate, week, "PM")
-              );
-
-              // Morning shift assignment
-              assignShift(availablePeopleForRoleAM, 'morning', roster[formattedDate], shiftsAssigned, role, doubleShiftFlag);
-
-              // Afternoon shift assignment
-              assignShift(availablePeopleForRolePM, 'afternoon', roster[formattedDate], shiftsAssigned, role, doubleShiftFlag);
-
+            });
+  
+          } else {
+            // Daily granularity
+            for (let i = 0; i < 5; i++) {
+              const currentDate = currentWeekStartDate.plus({ days: i });
+              const formattedDate = currentDate.toFormat("EEEE dd LLLL yyyy");
+              roster[formattedDate] = {};
+  
+              uniqueRoles.forEach((roleObj) => {
+                const role = roleObj.role;
+  
+                if (roleObj.isAllDay) {
+                  if (!roster[formattedDate][role]) {
+                    roster[formattedDate][role] = [];
+                  }
+  
+                  const availablePeopleForRoleAllDay = rosterData.filter(
+                    (person) =>
+                      person.roles.includes(role) &&
+                      isAvailable(person, currentDate, role, week) &&
+                      isAvailableHalfDay(person, currentDate, week, "AM") &&
+                      isAvailableHalfDay(person, currentDate, week, "PM")
+                  );
+  
+                  if (availablePeopleForRoleAllDay.length > 0) {
+                    const personForAllDayShift = availablePeopleForRoleAllDay.sort(
+                      (a, b) =>
+                        ((shiftsAssigned.get(a.name) || 0) + 1) / a.weight -
+                        ((shiftsAssigned.get(b.name) || 0) + 1) / b.weight
+                    )[0];
+                    roster[formattedDate][role].push(personForAllDayShift.name);
+                    shiftsAssigned.set(
+                      personForAllDayShift.name,
+                      (shiftsAssigned.get(personForAllDayShift.name) || 0) + 1
+                    );
+                  }
+                } else {
+                  if (!roster[formattedDate][`morning_${role}`]) {
+                    roster[formattedDate][`morning_${role}`] = [];
+                  }
+                  if (!roster[formattedDate][`afternoon_${role}`]) {
+                    roster[formattedDate][`afternoon_${role}`] = [];
+                  }
+  
+                  const availablePeopleForRoleAM = rosterData.filter(
+                    (person) =>
+                      person.roles.includes(role) &&
+                      isAvailable(person, currentDate, role, week) &&
+                      isAvailableHalfDay(person, currentDate, week, "AM")
+                  );
+  
+                  let availablePeopleForRolePM = rosterData.filter(
+                    (person) =>
+                      person.roles.includes(role) &&
+                      isAvailable(person, currentDate, role, week) &&
+                      isAvailableHalfDay(person, currentDate, week, "PM")
+                  );
+  
+                  assignShift(availablePeopleForRoleAM, 'morning', roster[formattedDate], shiftsAssigned, role, doubleShiftFlag);
+                  assignShift(availablePeopleForRolePM, 'afternoon', roster[formattedDate], shiftsAssigned, role, doubleShiftFlag);
+                }
+              });
             }
-          });
+          }
         }
-      }
-      resolve(roster);
-    });
-  }
+        resolve(roster);
+      });
+    }
 
   // Generate roster from the startDate param
   const payload = await generateRoster(
     startDate,
     rosterData,
     numberOfWeeks,
-    doubleShiftFlag
+    doubleShiftFlag,
+    weeklyRosterFlag
   );
   return Response.json(payload);
 }

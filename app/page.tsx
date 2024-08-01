@@ -48,6 +48,7 @@ export default function Page() {
   const [toastMsg, setToastMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [doubleShiftFlag, setDoubleShiftFlag] = useState(false);
+  const [weeklyRosterFlag, setWeeklyRosterFlag] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [uploadData, setUploadData] = useState("")
   const handleCloseUpload = () => setShowUpload(false);
@@ -155,7 +156,7 @@ export default function Page() {
         const response = await fetch(
           `/api/process?startDate=${encodeURIComponent(
             startDate
-          )}&numWeeks=${encodeURIComponent(numWeeks)}&doubleShiftFlag=${encodeURIComponent(doubleShiftFlag)}`,
+          )}&numWeeks=${encodeURIComponent(numWeeks)}&doubleShiftFlag=${encodeURIComponent(doubleShiftFlag)}&weeklyRosterFlag=${encodeURIComponent(weeklyRosterFlag)}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -512,7 +513,20 @@ export default function Page() {
                   <Form.Check
                     type="switch"
                     checked={doubleShiftFlag}
+                    label={doubleShiftFlag ? "On" : "Off"}
                     onChange={() => setDoubleShiftFlag(!doubleShiftFlag)}
+                  />
+                </div>
+              </div>
+              <div className="mb-3">
+                <Form.Label
+                  className="form-label">Change the roster type from daily to weekly. <Badge pill bg="danger">EXPERIMENTAL</Badge></Form.Label>
+                <div>
+                  <Form.Check
+                    type="switch"
+                    label={weeklyRosterFlag ? "Weekly" : "Daily"}
+                    checked={weeklyRosterFlag}
+                    onChange={() => setWeeklyRosterFlag(!weeklyRosterFlag)}
                   />
                 </div>
               </div>
@@ -538,9 +552,10 @@ export default function Page() {
       <footer className="footer fixed-bottom py-3 bg-light">
         <div className="container text-center">
           <span className="text-muted">
-            RosterMaster - v1.0 - Licensed under MIT - Made in Perth, Western
-            Australia - Code available{" "}
-            <a href="https://github.com/declan-wade/roster-master">here</a>
+            RosterMaster - v1.1 - {" "}
+            <a href="https://codexgroup.com.au">© Codex Group WA {DateTime.now().toFormat('yyyy')}</a>
+            {" - "}
+            <a href="mailto:info@codexgroup.com.au">Email us for help and support</a>
           </span>
         </div>
       </footer>
