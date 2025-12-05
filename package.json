@@ -10,17 +10,17 @@
   },
   "dependencies": {
     "@vercel/analytics": "latest",
-    "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.2",
+    "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
     "js-cookie": "^3.0.5",
     "json2csv": "^6.0.0-alpha.2",
-    "luxon": "^3.4.4",
-    "next": "14.1.0",
+    "luxon": "^3.7.2",
+    "next": "^15",
     "react": "^18",
-    "react-bootstrap": "^2.10.1",
-    "react-chartjs-2": "^5.2.0",
+    "react-bootstrap": "3.0.0-beta.5",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^18",
-    "react-tooltip": "^5.26.3"
+    "react-tooltip": "^5.30"
   },
   "devDependencies": {
     "@types/luxon": "^3.4.2",
@@ -28,7 +28,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "^16.0.7",
     "typescript": "^5"
   }
 }
